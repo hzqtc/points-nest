@@ -30,7 +30,7 @@ async function loadScraperConfig() {
 function getActiveConfig() {
   if (!scraperConfigs) return null;
   const currentUrl = window.location.href;
-  return scraperConfigs.find(site => {
+  return scraperConfigs.find((site) => {
     try {
       const regex = new RegExp(site.urlRegex, "i");
       return regex.test(currentUrl);
@@ -63,7 +63,7 @@ function extractText(container, selectorInput) {
 
     const el = container.querySelector(selector);
     if (el) {
-      let value = null
+      let value = null;
       if (attrName) {
         value = el.getAttribute(attrName);
       } else {
@@ -88,7 +88,9 @@ function getAccountName(config) {
   const selector = config.selectors.accountName;
   const text = extractText(document, selector);
   if (!text) {
-    throw new Error(`Account name selector "${JSON.stringify(selector)}" did not match any element on the page.`);
+    throw new Error(
+      `Account name selector "${JSON.stringify(selector)}" did not match any element on the page.`,
+    );
   }
   return text;
 }
@@ -101,10 +103,13 @@ function scrapeReward(config) {
   if (!config.selectors) return null;
 
   const selectors = config.selectors;
-  if (!selectors.rewardsContainer || !selectors.rewardsLabel || !selectors.rewardsValue) return null;
+  if (!selectors.rewardsContainer || !selectors.rewardsLabel || !selectors.rewardsValue)
+    return null;
 
   // Find the first matched container element
-  const containerSelectors = Array.isArray(selectors.rewardsContainer) ? selectors.rewardsContainer : [selectors.rewardsContainer];
+  const containerSelectors = Array.isArray(selectors.rewardsContainer)
+    ? selectors.rewardsContainer
+    : [selectors.rewardsContainer];
   let item = null;
   for (const cSel of containerSelectors) {
     item = document.querySelector(cSel);
@@ -112,17 +117,23 @@ function scrapeReward(config) {
   }
 
   if (!item) {
-    throw new Error(`Rewards container selector "${JSON.stringify(selectors.rewardsContainer)}" matched zero elements on the page.`);
+    throw new Error(
+      `Rewards container selector "${JSON.stringify(selectors.rewardsContainer)}" matched zero elements on the page.`,
+    );
   }
 
   const labelText = extractText(item, selectors.rewardsLabel);
   if (!labelText) {
-    throw new Error(`Rewards label selector "${JSON.stringify(selectors.rewardsLabel)}" matched no element or attribute inside container.`);
+    throw new Error(
+      `Rewards label selector "${JSON.stringify(selectors.rewardsLabel)}" matched no element or attribute inside container.`,
+    );
   }
 
   const valueText = extractText(item, selectors.rewardsValue);
   if (!valueText) {
-    throw new Error(`Rewards value selector "${JSON.stringify(selectors.rewardsValue)}" matched no element or attribute inside container.`);
+    throw new Error(
+      `Rewards value selector "${JSON.stringify(selectors.rewardsValue)}" matched no element or attribute inside container.`,
+    );
   }
 
   // Strip non-digits and commas to parse clean numeric value
@@ -130,13 +141,15 @@ function scrapeReward(config) {
   const numberMatch = cleanedValueText.match(/(\d+)/);
 
   if (!numberMatch) {
-    throw new Error(`Rewards value text "${valueText}" was malformatted and did not contain a valid number.`);
+    throw new Error(
+      `Rewards value text "${valueText}" was malformatted and did not contain a valid number.`,
+    );
   }
 
   const points = parseInt(numberMatch[1], 10);
   return {
     programName: labelText,
-    points: points
+    points: points,
   };
 }
 
@@ -156,7 +169,7 @@ async function runScraper(config) {
         accountName: accountName,
         programName: reward.programName,
         points: reward.points,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       };
       console.log("[Points Tracker] Scraped rewards data successfully:", data);
 
@@ -166,7 +179,7 @@ async function runScraper(config) {
         lastCapturedDataMap.set(accountName, data);
         chrome.runtime.sendMessage({
           type: "POINTS_UPDATED",
-          payload: data
+          payload: data,
         });
       }
       return true;
@@ -209,7 +222,9 @@ async function scheduleScraperWithRetry() {
       scrapeAttemptsInterval = null;
     }
     if (attempts >= maxAttempts) {
-      console.err(`[Points Tracker] failed to scrape rewards information after ${maxAttempts} attemps.`);
+      console.err(
+        `[Points Tracker] failed to scrape rewards information after ${maxAttempts} attemps.`,
+      );
     }
   }, interval);
 }

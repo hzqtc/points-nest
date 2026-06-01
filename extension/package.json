@@ -1,0 +1,9 @@
+{
+  "name": "points-scraper-extension",
+  "version": "1.0.0",
+  "description": "Chrome extension to scrape points and balances.",
+  "private": true,
+  "devDependencies": {
+    "@types/chrome": "^0.1.42"
+  }
+}

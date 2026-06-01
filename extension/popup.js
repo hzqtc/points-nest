@@ -42,18 +42,18 @@ function renderData() {
 
     // Populate UI
     accountsListContainer.innerHTML = "";
-    accounts.forEach(account => {
+    accounts.forEach((account) => {
       const card = document.createElement("div");
       card.className = "account-card";
 
       const updatedTime = new Date(account.timestamp).toLocaleTimeString([], {
-        hour: '2-digit',
-        minute: '2-digit'
+        hour: "2-digit",
+        minute: "2-digit",
       });
 
       card.innerHTML = `
         <div class="account-info">
-          <span class="account-bank">${account.bank} — ${account.programName || 'Ultimate Rewards Points'}</span>
+          <span class="account-bank">${account.bank} — ${account.programName}</span>
           <span class="account-name">${account.accountName}</span>
         </div>
         <div class="account-pts">
