@@ -222,7 +222,7 @@ async function scheduleScraperWithRetry() {
       scrapeAttemptsInterval = null;
     }
     if (attempts >= maxAttempts) {
-      console.err(
+      console.error(
         `[Points Tracker] failed to scrape rewards information after ${maxAttempts} attemps.`,
       );
     }

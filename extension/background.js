@@ -14,11 +14,11 @@ fetch(chrome.runtime.getURL("constants.json"))
     console.log("[Points Tracker] Loaded shared server constants:", reportUrl);
   })
   .catch((err) => {
-    console.err("[Points Tracker] Failed to load shared/constants.json:", err);
+    console.error("[Points Tracker] Failed to load shared/constants.json:", err);
   });
 
 // Listen for messages from content.js
-chrome.runtime.onMessage.addListener((message, _, _) => {
+chrome.runtime.onMessage.addListener((message) => {
   if (message.type === "POINTS_UPDATED") {
     const pointsData = message.payload;
     console.log("[Points Tracker] Received points update in background:", pointsData);
@@ -30,7 +30,7 @@ chrome.runtime.onMessage.addListener((message, _, _) => {
 });
 
 // Listen for URL/navigation changes natively and notify content.js
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, _) => {
+chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
   if (changeInfo.url) {
     chrome.tabs
       .sendMessage(tabId, {
