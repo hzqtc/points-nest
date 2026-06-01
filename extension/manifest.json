@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "Points Tracker (Secure & Local)",
+  "version": "1.0.0",
+  "description": "Securely and locally aggregates your credit card points balances.",
+  "permissions": ["storage"],
+  "host_permissions": ["https://secure.chase.com/*", "http://localhost:8080/*"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Points Tracker"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://secure.chase.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_end"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["config.json"],
+      "matches": ["https://secure.chase.com/*"]
+    }
+  ]
+}

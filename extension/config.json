@@ -1,0 +1,15 @@
+[
+  {
+    "siteName": "Chase",
+    "urlRegex": "https://secure\\.chase\\.com/web/auth/dashboard#/dashboard/summary/[0-9]+/CARD/BAC",
+    "selectors": {
+      "accountName": ".nav-bar__print-header",
+      "rewardsContainer": "[id$=\"Rewards-dataItem\"]",
+      "rewardsLabel": [
+        "[data-testid=\"dataItem-label\"] mds-definition-link::attr(definition-text)",
+        "[data-testid=\"dataItem-label\"]"
+      ],
+      "rewardsValue": "[data-testid=\"dataItem-value\"]"
+    }
+  }
+]
