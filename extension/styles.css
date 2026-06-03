@@ -12,7 +12,7 @@
   --text-secondary: #64748b;
   --accent-color: #2563eb;
   --accent-hover: #1d4ed8;
-  
+
   /* Status Colors */
   --color-online: #10b981;
   --color-offline: #ef4444;
@@ -28,7 +28,7 @@ body {
   font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   background-color: var(--bg-primary);
   color: var(--text-primary);
-  width: 320px;
+  width: 400px;
   min-height: 280px;
   padding: 16px;
   -webkit-font-smoothing: antialiased;
