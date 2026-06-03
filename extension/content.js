@@ -154,20 +154,44 @@ function scrapeReward(config) {
 }
 
 /**
+ * Normalizes a string value using an array of regex replacement rules.
+ * Handled gracefully and optionally.
+ */
+function normalizeString(value, rule) {
+  if (!rule || !rule.pattern || rule.replace === undefined) return value;
+
+  try {
+    const regex = new RegExp(rule.pattern, "i");
+    return value.replace(regex, rule.replace);
+  } catch (e) {
+    console.warn("[Points Tracker] Normalization rule compile error:", e);
+    return value;
+  }
+}
+
+/**
  * Executes the scraper and forwards any found data to the background script.
  * Returns true if scraping succeeded or if active config is null (no need to retry).
  * Returns false if elements are not loaded yet or if an extraction error occurs, indicating a retry is needed.
  */
 async function runScraper(config) {
   try {
-    const accountName = getAccountName(config);
+    let accountName = getAccountName(config);
     const reward = scrapeReward(config);
 
     if (accountName && reward) {
+      let programName = reward.programName;
+
+      // Apply normalizations from config if present
+      if (config.normalizations) {
+        accountName = normalizeString(accountName, config.normalizations.accountName);
+        programName = normalizeString(programName, config.normalizations.programName);
+      }
+
       const data = {
         bank: config.siteName,
         accountName: accountName,
-        programName: reward.programName,
+        programName: programName,
         points: reward.points,
         timestamp: new Date().toISOString(),
       };

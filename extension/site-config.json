@@ -10,16 +10,36 @@
         "[data-testid=\"dataItem-label\"]"
       ],
       "rewardsValue": "[data-testid=\"dataItem-value\"]"
+    },
+    "normalizations": {
+      "accountName": {
+        "pattern": "\\.\\.\\.",
+        "replace": ""
+      },
+      "programName": {
+        "pattern": "® points",
+        "replace": ""
+      }
     }
   },
   {
-    "siteName": "American Express",
+    "siteName": "Amex",
     "urlRegex": "https://global\\.americanexpress\\.com/dashboard\\?account_key=[A-Z0-9]+",
     "selectors": {
       "accountName": "[data-testid=\"simple_switcher_display_label\"]",
       "rewardsContainer": "[data-module-name=\"axp-loyalty-points\"]",
       "rewardsLabel": "[data-locator-id=\"membership_rewards_title\"]",
       "rewardsValue": "[data-locator-id=\"membership_rewards_title_value\"]"
+    },
+    "normalizations": {
+      "accountName": {
+        "pattern": "Amex (.*)® Card••••(\\d+)",
+        "replace": "$1 ($2)"
+      },
+      "programName": {
+        "pattern": "® points",
+        "replace": ""
+      }
     }
   }
 ]

@@ -28,7 +28,7 @@ body {
   font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   background-color: var(--bg-primary);
   color: var(--text-primary);
-  width: 400px;
+  width: 320px;
   min-height: 280px;
   padding: 16px;
   -webkit-font-smoothing: antialiased;
