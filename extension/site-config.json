@@ -41,5 +41,15 @@
         "replace": ""
       }
     }
+  },
+  {
+    "siteName": "World of Hyatt",
+    "urlRegex": "https://www.hyatt.com/profile/",
+    "selectors": {
+      "accountName": "[data-locator=\"member-number\"]",
+      "rewardsContainer": "[class^=\"MemberCard_content\"]",
+      "rewardsLabel": "[class^=\"MemberCard_tierLabel\"]",
+      "rewardsValue": "[data-locator=\"points-balance\"]"
+    }
   }
 ]
