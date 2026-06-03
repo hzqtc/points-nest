@@ -11,5 +11,15 @@
       ],
       "rewardsValue": "[data-testid=\"dataItem-value\"]"
     }
+  },
+  {
+    "siteName": "American Express",
+    "urlRegex": "https://global\\.americanexpress\\.com/dashboard\\?account_key=[A-Z0-9]+",
+    "selectors": {
+      "accountName": "[data-testid=\"simple_switcher_display_label\"]",
+      "rewardsContainer": "[data-module-name=\"axp-loyalty-points\"]",
+      "rewardsLabel": "[data-locator-id=\"membership_rewards_title\"]",
+      "rewardsValue": "[data-locator-id=\"membership_rewards_title_value\"]"
+    }
   }
 ]

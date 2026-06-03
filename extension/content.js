@@ -1,6 +1,6 @@
 /**
  * content.js
- * Scans portal DOMs dynamically using config.json to find points/rewards balances.
+ * Scans portal DOMs dynamically using site-config.json to find points/rewards balances.
  * Operates safely, passively, and does not capture sensitive user credentials.
  * Robust selector-driven engine supporting prioritized array fallback selectors
  * and inlined attribute extractors (e.g. selector::attr(name)).
@@ -11,16 +11,16 @@ let isConfigInitialized = false;
 let lastCapturedDataMap = new Map();
 
 /**
- * Loads the config.json file from the extension bundle.
+ * Loads the site-config.json file from the extension bundle.
  */
 async function loadScraperConfig() {
   try {
-    const url = chrome.runtime.getURL("config.json");
+    const url = chrome.runtime.getURL("site-config.json");
     const response = await fetch(url);
     scraperConfigs = await response.json();
     console.log("[Points Tracker] Loaded scraper configuration successfully:", scraperConfigs);
   } catch (error) {
-    console.error("[Points Tracker] Failed to load config.json:", error);
+    console.error("[Points Tracker] Failed to load site-config.json:", error);
   }
 }
 
@@ -79,7 +79,7 @@ function extractText(container, selectorInput) {
 }
 
 /**
- * Resolves the active Account Name using the selector from config.json.
+ * Resolves the active Account Name using the selector from site-config.json.
  * Throws explicit errors if the selector fails to match or returns an empty value.
  */
 function getAccountName(config) {
@@ -96,7 +96,7 @@ function getAccountName(config) {
 }
 
 /**
- * Scans the DOM for a single points balance using config.json selectors.
+ * Scans the DOM for a single points balance using site-config.json selectors.
  * Pure extraction method: returns only { programName, points }.
  */
 function scrapeReward(config) {
@@ -208,6 +208,7 @@ async function scheduleScraperWithRetry() {
   // Verify if the current domain matches a configured target site
   const activeConfig = getActiveConfig();
   if (!activeConfig) return;
+  console.log("[Points Tracker] Start scraping on matched URL with config: ", activeConfig);
 
   let attempts = 0;
   const interval = 1000;
@@ -232,7 +233,6 @@ async function scheduleScraperWithRetry() {
 // Trigger scraper on URL changes
 chrome.runtime.onMessage.addListener((message) => {
   if (message.type === "URL_CHANGED") {
-    console.log("[Points Tracker] URL change detected, scheduling scraping retry loop...");
     scheduleScraperWithRetry();
   }
 });

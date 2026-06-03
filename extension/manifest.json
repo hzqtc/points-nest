@@ -4,7 +4,11 @@
   "version": "1.0.0",
   "description": "Securely and locally aggregates your credit card points balances.",
   "permissions": ["storage"],
-  "host_permissions": ["https://secure.chase.com/*", "http://localhost:5586/*"],
+  "host_permissions": [
+    "https://secure.chase.com/*",
+    "https://global.americanexpress.com/*",
+    "http://localhost:5586/*"
+  ],
   "action": {
     "default_popup": "popup.html",
     "default_title": "Points Tracker"
@@ -14,15 +18,15 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://secure.chase.com/*"],
+      "matches": ["https://secure.chase.com/*", "https://global.americanexpress.com/*"],
       "js": ["content.js"],
       "run_at": "document_end"
     }
   ],
   "web_accessible_resources": [
     {
-      "resources": ["config.json", "shared/constants.json"],
-      "matches": ["https://secure.chase.com/*"]
+      "resources": ["site-config.json", "constants.json"],
+      "matches": ["https://secure.chase.com/*", "https://global.americanexpress.com/*"]
     }
   ]
 }
