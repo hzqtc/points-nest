@@ -7,22 +7,22 @@ document.addEventListener("DOMContentLoaded", () => {
   renderData();
   checkDaemonStatus();
 
-  // Listen for real-time background storage updates to refresh UI instantly
-  chrome.runtime.onMessage.addListener((message) => {
-    if (message.type === "POINTS_UPDATED") {
+  // Listen for storage changes to refresh UI instantly
+  chrome.storage.onChanged.addListener((changes, areaName) => {
+    if (changes.latestBalances) {
       renderData();
     }
+    if (changes.daemonConnected || changes.daemonError) {
+      checkDaemonStatus();
+    }
   });
-
-  // Poll daemon connectivity status periodically
-  setInterval(checkDaemonStatus, 5000);
 });
 
 /**
- * Renders the points dashboard using saved data in chrome.storage.local.
+ * Renders the points dashboard using saved data in chrome.storage.sync.
  */
 function renderData() {
-  chrome.storage.local.get(["latestBalances"], (result) => {
+  chrome.storage.sync.get(["latestBalances"], (result) => {
     const latestBalances = result.latestBalances || {};
     const accounts = Object.values(latestBalances);
 

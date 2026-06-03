@@ -44,12 +44,12 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
 });
 
 function saveToChromeStorage(data) {
-  chrome.storage.local.get(["latestBalances"], (result) => {
+  chrome.storage.sync.get(["latestBalances"], (result) => {
     const latestBalances = result.latestBalances || {};
     const key = data.accountName;
     latestBalances[key] = data;
-    chrome.storage.local.set({ latestBalances }, () => {
-      console.log("[Points Tracker] Points saved locally to extension storage.");
+    chrome.storage.sync.set({ latestBalances }, () => {
+      console.log("[Points Tracker] Points synced to Chrome storage across devices.");
     });
   });
 }
