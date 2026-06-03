@@ -8,6 +8,7 @@
     "https://secure.chase.com/*",
     "https://global.americanexpress.com/*",
     "https://www.hyatt.com/*",
+    "https://www.ihg.com/*",
     "http://localhost:5586/*"
   ],
   "action": {
@@ -22,7 +23,8 @@
       "matches": [
         "https://secure.chase.com/*",
         "https://global.americanexpress.com/*",
-        "https://www.hyatt.com/*"
+        "https://www.hyatt.com/*",
+        "https://www.ihg.com/*"
       ],
       "js": ["content.js"],
       "run_at": "document_end"
@@ -34,7 +36,8 @@
       "matches": [
         "https://secure.chase.com/*",
         "https://global.americanexpress.com/*",
-        "https://www.hyatt.com/*"
+        "https://www.hyatt.com/*",
+        "https://www.ihg.com/*"
       ]
     }
   ]

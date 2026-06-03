@@ -51,5 +51,20 @@
       "rewardsLabel": "[class^=\"MemberCard_tierLabel\"]",
       "rewardsValue": "[data-locator=\"points-balance\"]"
     }
+  },
+  {
+    "siteName": "IHG",
+    "urlRegex": "https://www.ihg.com/rewardsclub/[a-z]+/[a-z]+/account-mgmt/home",
+    "selectors": {
+      "accountName": "[data-testid=\"memberNumberSID\"]",
+      "rewardsContainer": "app-ihg-header .container",
+      "rewardsLabel": "[data-testid=\"memberLevelNameSID\"]",
+      "rewardsValue": "[data-testid=\"pointsToRedeemSID\"]"
+    },
+    "normalizations": {
+      "programName": {
+        "transform": "titlecase"
+      }
+    }
   }
 ]

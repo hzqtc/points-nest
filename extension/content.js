@@ -176,15 +176,33 @@ function scrapeReward(config) {
  * Handled gracefully and optionally.
  */
 function normalizeString(value, rule) {
-  if (!rule || !rule.pattern || rule.replace === undefined) return value;
+  if (!rule) return value;
+
+  let result = value;
 
   try {
-    const regex = new RegExp(rule.pattern, "i");
-    return value.replace(regex, rule.replace);
+    // Apply optional regex replacement
+    if (rule.pattern && rule.replace !== undefined) {
+      const regex = new RegExp(rule.pattern, "i");
+      result = result.replace(regex, rule.replace);
+    }
+
+    // Apply optional case transformation
+    if (rule.transform) {
+      const transform = rule.transform.toLowerCase();
+      if (transform === "titlecase") {
+        result = result.replace(/\b\w/g, (char) => char.toUpperCase());
+      } else if (transform === "uppercase") {
+        result = result.toUpperCase();
+      } else if (transform === "lowercase") {
+        result = result.toLowerCase();
+      }
+    }
   } catch (e) {
-    console.warn("[Points Tracker] Normalization rule compile error:", e);
-    return value;
+    console.warn("[Points Tracker] Normalization rule error:", e);
   }
+
+  return result;
 }
 
 /**
