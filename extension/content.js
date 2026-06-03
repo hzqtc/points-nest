@@ -8,19 +8,37 @@
 
 let scraperConfigs = null;
 let isConfigInitialized = false;
-let lastCapturedDataMap = new Map();
+let latestBalanceMap = new Map();
 
 /**
- * Loads the site-config.json file from the extension bundle.
+ * Updates the in-memory latestBalanceMap from a plain object of values.
  */
-async function loadScraperConfig() {
+function updateLatestBalanceMap(latestBalances) {
+  if (!latestBalances) return;
+  for (const [key, value] of Object.entries(latestBalances)) {
+    latestBalanceMap.set(key, value);
+  }
+}
+
+/**
+ * Loads the site-config.json file and populates the in-memory latestBalanceMap from sync storage.
+ */
+async function initialize() {
   try {
     const url = chrome.runtime.getURL("site-config.json");
     const response = await fetch(url);
     scraperConfigs = await response.json();
     console.log("[Points Tracker] Loaded scraper configuration successfully:", scraperConfigs);
+
+    // Initialize latestBalanceMap from Chrome sync storage
+    const result = await chrome.storage.sync.get(["latestBalances"]);
+    updateLatestBalanceMap(result.latestBalances);
+    console.log(
+      "[Points Tracker] Initialized latestBalanceMap from storage sync:",
+      latestBalanceMap,
+    );
   } catch (error) {
-    console.error("[Points Tracker] Failed to load site-config.json:", error);
+    console.error("[Points Tracker] Failed to load site-config.json or storage sync:", error);
   }
 }
 
@@ -197,10 +215,10 @@ async function runScraper(config) {
       };
       console.log("[Points Tracker] Scraped rewards data successfully:", data);
 
-      const lastCaptured = lastCapturedDataMap.get(accountName);
+      const lastCaptured = latestBalanceMap.get(accountName);
       // Only send if the balance has changed to prevent infinite loops / spam
       if (!lastCaptured || lastCaptured.points !== data.points) {
-        lastCapturedDataMap.set(accountName, data);
+        latestBalanceMap.set(accountName, data);
         chrome.runtime.sendMessage({
           type: "POINTS_UPDATED",
           payload: data,
@@ -226,7 +244,7 @@ async function scheduleScraperWithRetry() {
   }
 
   if (!isConfigInitialized) {
-    await loadScraperConfig();
+    await initialize();
     isConfigInitialized = true;
   }
   // Verify if the current domain matches a configured target site
@@ -253,6 +271,13 @@ async function scheduleScraperWithRetry() {
     }
   }, interval);
 }
+
+// Sync latestBalanceMap in real-time when storage updates from other tabs/devices
+chrome.storage.onChanged.addListener((changes, areaName) => {
+  if (areaName === "sync" && changes.latestBalances) {
+    updateLatestBalanceMap(changes.latestBalances.newValue);
+  }
+});
 
 // Trigger scraper on URL changes
 chrome.runtime.onMessage.addListener((message) => {
