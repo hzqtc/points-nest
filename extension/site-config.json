@@ -4,20 +4,24 @@
     "urlRegex": "https://secure\\.chase\\.com/web/auth/dashboard#/dashboard/summary/[0-9]+/CARD/BAC",
     "selectors": {
       "accountName": ".nav-bar__print-header",
-      "rewardsContainer": "[id$=\"Rewards-dataItem\"]",
+      "accountId": ".nav-bar__print-header",
       "rewardsLabel": [
-        "[data-testid=\"dataItem-label\"] mds-definition-link::attr(definition-text)",
-        "[data-testid=\"dataItem-label\"]"
+        "[id$=\"Rewards-dataItem\"] [data-testid=\"dataItem-label\"] mds-definition-link::attr(definition-text)",
+        "[id$=\"Rewards-dataItem\"] [data-testid=\"dataItem-label\"]"
       ],
-      "rewardsValue": "[data-testid=\"dataItem-value\"]"
+      "rewardsValue": "[id$=\"Rewards-dataItem\"] [data-testid=\"dataItem-value\"]"
     },
     "normalizations": {
       "accountName": {
-        "pattern": "\\.\\.\\.",
+        "pattern": "\\s*\\(\\.\\.\\.\\d+\\)",
         "replace": ""
       },
+      "accountId": {
+        "pattern": ".*\\(\\.\\.\\.(\\d+)\\)",
+        "replace": "$1"
+      },
       "programName": {
-        "pattern": "® points",
+        "pattern": "®? [pP]oints",
         "replace": ""
       }
     }
@@ -27,14 +31,18 @@
     "urlRegex": "https://global\\.americanexpress\\.com/dashboard\\?account_key=[A-Z0-9]+",
     "selectors": {
       "accountName": "[data-testid=\"simple_switcher_display_label\"]",
-      "rewardsContainer": "[data-module-name=\"axp-loyalty-points\"]",
+      "accountId": "[data-testid=\"simple_switcher_display_label\"]",
       "rewardsLabel": "[data-locator-id=\"membership_rewards_title\"]",
       "rewardsValue": "[data-locator-id=\"membership_rewards_title_value\"]"
     },
     "normalizations": {
       "accountName": {
         "pattern": "Amex (.*)® Card••••(\\d+)",
-        "replace": "$1 ($2)"
+        "replace": "$1"
+      },
+      "accountId": {
+        "pattern": ".*••••(\\d+)",
+        "replace": "$1"
       },
       "programName": {
         "pattern": "® points",
@@ -46,22 +54,32 @@
     "siteName": "World of Hyatt",
     "urlRegex": "https://www.hyatt.com/profile/",
     "selectors": {
-      "accountName": "[data-locator=\"member-number\"]",
-      "rewardsContainer": "[class^=\"MemberCard_content\"]",
+      "accountName": "[data-locator=\"name\"]",
+      "accountId": "[data-locator=\"member-number\"]",
       "rewardsLabel": "[class^=\"MemberCard_tierLabel\"]",
       "rewardsValue": "[data-locator=\"points-balance\"]"
+    },
+    "normalizations": {
+      "accountName": {
+        "pattern": "^(?:Mr|Mrs|Ms|Miss|Dr|Prof)\\.?\\s+",
+        "replace": ""
+      }
     }
   },
   {
     "siteName": "IHG",
     "urlRegex": "https://www.ihg.com/rewardsclub/[a-z]+/[a-z]+/account-mgmt/home",
     "selectors": {
-      "accountName": "[data-testid=\"memberNumberSID\"]",
-      "rewardsContainer": "app-ihg-header .container",
+      "accountName": "[data-testid=\"memberNameSID\"]",
+      "accountId": "[data-testid=\"memberNumberSID\"]",
       "rewardsLabel": "[data-testid=\"memberLevelNameSID\"]",
       "rewardsValue": "[data-testid=\"pointsToRedeemSID\"]"
     },
     "normalizations": {
+      "accountName": {
+        "pattern": "Hello (.+),",
+        "replace": "$1"
+      },
       "programName": {
         "transform": "titlecase"
       }
@@ -71,13 +89,13 @@
     "siteName": "Hilton Honors",
     "urlRegex": "https://www.hilton.com/[a-z]+/hilton-honors/guest/my-account/",
     "selectors": {
-      "accountName": "[data-testid=\"honorsNumberBlock\"]",
-      "rewardsContainer": "[data-testid=\"memberInfoBlock\"]",
+      "accountName": "[data-testid=\"firstNameLabel\"]",
+      "accountId": "[data-testid=\"honorsNumberBlock\"]",
       "rewardsLabel": "[data-testid=\"tierBlock\"] > div:first-of-type",
       "rewardsValue": "[data-testid=\"honorsPointsBlock\"]"
     },
     "normalizations": {
-      "accountName": {
+      "accountId": {
         "pattern": "Hilton Honors # ",
         "replace": ""
       }

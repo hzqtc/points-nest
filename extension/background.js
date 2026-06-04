@@ -46,7 +46,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
 function saveToChromeStorage(data) {
   chrome.storage.sync.get(["latestBalances"], (result) => {
     const latestBalances = result.latestBalances || {};
-    const key = data.accountName;
+    const key = `${data.bank}_${data.accountName}_${data.accountId}`;
     latestBalances[key] = data;
     chrome.storage.sync.set({ latestBalances }, () => {
       console.log("[Points Tracker] Points synced to Chrome storage across devices.");

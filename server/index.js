@@ -29,7 +29,7 @@ const JSON_FILE = path.join(__dirname, "../output/latest_points.json");
 function initializeFiles() {
   // Initialize CSV with headers if it doesn't exist
   if (!fs.existsSync(CSV_FILE)) {
-    fs.writeFileSync(CSV_FILE, "Timestamp,Bank,AccountID,ProgramName,Points\n", "utf8");
+    fs.writeFileSync(CSV_FILE, "Timestamp,Bank,AccountName,AccountID,ProgramName,Points\n", "utf8");
     console.log(styleText("cyan", `Created new points history CSV at: ${CSV_FILE}`));
   }
 
@@ -43,15 +43,15 @@ function initializeFiles() {
 /**
  * Adds a row to the local CSV points log.
  */
-function appendToCSV(timestamp, bank, accountName, programName, points) {
-  const row = `${timestamp},${bank},${accountName},${programName},${points}\n`;
+function appendToCSV(timestamp, bank, accountName, accountId, programName, points) {
+  const row = `${timestamp},${bank},${accountName},${accountId},${programName},${points}\n`;
   fs.appendFileSync(CSV_FILE, row, "utf8");
 }
 
 /**
  * Updates the latest points JSON cache.
  */
-function updateLatestJSON(timestamp, bank, accountName, programName, points) {
+function updateLatestJSON(timestamp, bank, accountName, accountId, programName, points) {
   let data = {};
   try {
     if (fs.existsSync(JSON_FILE)) {
@@ -64,11 +64,12 @@ function updateLatestJSON(timestamp, bank, accountName, programName, points) {
     );
   }
 
-  // Keyed by Bank + Account ID + Program Name to support multiple accounts and loyalty programs
-  const key = accountName;
+  // Keyed by Bank + Account Name + Account ID to support multiple accounts and loyalty programs
+  const key = `${bank}_${accountName}_${accountId}`;
   data[key] = {
     bank,
     accountName,
+    accountId,
     programName,
     points: parseInt(points, 10),
     timestamp,
@@ -102,7 +103,8 @@ const server = http.createServer((req, res) => {
     req.on("end", () => {
       try {
         const payload = JSON.parse(body);
-        const { bank, accountName, programName, points, timestamp } = payload;
+        const { bank, accountName, accountId, programName, points, timestamp } = payload;
+        const resolvedAccountId = accountId || accountName;
 
         if (!bank || !accountName || !programName || points === undefined || !timestamp) {
           res.writeHead(400, { "Content-Type": "application/json" });
@@ -118,14 +120,14 @@ const server = http.createServer((req, res) => {
           "\n" + styleText(["green", "bold"], "➔ Received points update from Extension:"),
         );
         console.log(`  Bank:    ${styleText("yellow", bank)}`);
-        console.log(`  Account: ${styleText("yellow", accountName)}`);
+        console.log(`  Account: ${styleText("yellow", accountName)} (${resolvedAccountId})`);
         console.log(`  Program: ${styleText("yellow", programName)}`);
         console.log(`  Points:  ${styleText("yellow", points.toLocaleString())}`);
         console.log(`  At:      ${styleText("yellow", new Date(timestamp).toLocaleTimeString())}`);
 
         // Write to local files
-        appendToCSV(timestamp, bank, accountName, programName, points);
-        updateLatestJSON(timestamp, bank, accountName, programName, points);
+        appendToCSV(timestamp, bank, accountName, resolvedAccountId, programName, points);
+        updateLatestJSON(timestamp, bank, accountName, resolvedAccountId, programName, points);
 
         res.writeHead(200, { "Content-Type": "application/json" });
         res.end(JSON.stringify({ success: true }));

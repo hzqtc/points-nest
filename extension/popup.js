@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
   checkDaemonStatus();
 
   // Listen for storage changes to refresh UI instantly
-  chrome.storage.onChanged.addListener((changes, areaName) => {
+  chrome.storage.onChanged.addListener((changes) => {
     if (changes.latestBalances) {
       renderData();
     }
@@ -47,11 +47,14 @@ function renderData() {
       card.className = "account-card";
 
       const updatedTime = getRelativeTime(account.timestamp);
+      const displayName = account.accountId
+        ? `${account.accountName} (${account.accountId})`
+        : account.accountName;
 
       card.innerHTML = `
         <div class="account-info">
           <span class="account-bank">${account.bank} — ${account.programName}</span>
-          <span class="account-name">${account.accountName}</span>
+          <span class="account-name">${displayName}</span>
         </div>
         <div class="account-pts">
           <span class="pts-amount">${formatNumber(account.points)}</span>
