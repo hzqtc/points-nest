@@ -66,5 +66,21 @@
         "transform": "titlecase"
       }
     }
+  },
+  {
+    "siteName": "Hilton Honors",
+    "urlRegex": "https://www.hilton.com/[a-z]+/hilton-honors/guest/my-account/",
+    "selectors": {
+      "accountName": "[data-testid=\"honorsNumberBlock\"]",
+      "rewardsContainer": "[data-testid=\"memberInfoBlock\"]",
+      "rewardsLabel": "[data-testid=\"tierBlock\"] > div:first-of-type",
+      "rewardsValue": "[data-testid=\"honorsPointsBlock\"]"
+    },
+    "normalizations": {
+      "accountName": {
+        "pattern": "Hilton Honors # ",
+        "replace": ""
+      }
+    }
   }
 ]

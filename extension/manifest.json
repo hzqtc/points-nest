@@ -9,6 +9,7 @@
     "https://global.americanexpress.com/*",
     "https://www.hyatt.com/*",
     "https://www.ihg.com/*",
+    "https://www.hilton.com/*",
     "http://localhost:5586/*"
   ],
   "action": {
@@ -24,7 +25,8 @@
         "https://secure.chase.com/*",
         "https://global.americanexpress.com/*",
         "https://www.hyatt.com/*",
-        "https://www.ihg.com/*"
+        "https://www.ihg.com/*",
+        "https://www.hilton.com/*"
       ],
       "js": ["content.js"],
       "run_at": "document_end"
@@ -37,7 +39,8 @@
         "https://secure.chase.com/*",
         "https://global.americanexpress.com/*",
         "https://www.hyatt.com/*",
-        "https://www.ihg.com/*"
+        "https://www.ihg.com/*",
+        "https://www.hilton.com/*"
       ]
     }
   ]
