@@ -105,5 +105,26 @@
         "replace": ""
       }
     }
+  },
+  {
+    "siteName": "Alaska Atmos",
+    "category": "Airline",
+    "urlRegex": "https://www.alaskaair.com/atmosrewards/account/overview/",
+    "selectors": {
+      "accountName": ".member-info .display-name",
+      "accountId": ".guest-information-container > .member-info >.info-row:nth-of-type(2)",
+      "programName": ".guest-information-container > .member-info >.info-row:first-of-type",
+      "rewardsValue": ".available-points-container .points-value"
+    },
+    "normalizations": {
+      "accountId": {
+        "pattern": "Rewards No. ",
+        "replace": ""
+      },
+      "programName": {
+        "pattern": "Atmos™ ",
+        "replace": ""
+      }
+    }
   }
 ]
