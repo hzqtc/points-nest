@@ -37,31 +37,63 @@ function renderData() {
       return;
     }
 
-    // Sort accounts: largest points first
-    accounts.sort((a, b) => b.points - a.points);
+    // Group accounts by category
+    const knownCategories = ["Bank", "Hotel", "Airline"];
+    const grouped = {};
+    accounts.forEach((account) => {
+      let category = account.category;
+      if (!knownCategories.includes(category)) {
+        category = "Other";
+      }
+      if (!grouped[category]) {
+        grouped[category] = [];
+      }
+      grouped[category].push(account);
+    });
 
+    // Sort accounts within each category by points descending
+    Object.keys(grouped).forEach((cat) => {
+      grouped[cat].sort((a, b) => b.points - a.points);
+    });
+
+    const finalCategories = [...knownCategories, "Other"];
     // Populate UI
     accountsListContainer.innerHTML = "";
-    accounts.forEach((account) => {
-      const card = document.createElement("div");
-      card.className = "account-card";
+    finalCategories.forEach((cat) => {
+      const items = grouped[cat];
+      if (!items || items.length === 0) return;
 
-      const updatedTime = getRelativeTime(account.timestamp);
-      const displayName = account.accountId
-        ? `${account.accountName} (${account.accountId})`
-        : account.accountName;
+      const groupDiv = document.createElement("div");
+      groupDiv.className = "category-group";
 
-      card.innerHTML = `
-        <div class="account-info">
-          <span class="account-provider">${account.provider} — ${account.programName}</span>
-          <span class="account-name">${displayName}</span>
-        </div>
-        <div class="account-pts">
-          <span class="pts-amount">${formatNumber(account.points)}</span>
-          <div class="pts-updated">Updated ${updatedTime}</div>
-        </div>
-      `;
-      accountsListContainer.appendChild(card);
+      const titleDiv = document.createElement("div");
+      titleDiv.className = "category-title";
+      titleDiv.textContent = cat;
+      groupDiv.appendChild(titleDiv);
+
+      items.forEach((account) => {
+        const card = document.createElement("div");
+        card.className = "account-card";
+
+        const updatedTime = getRelativeTime(account.timestamp);
+        const displayName = account.accountId
+          ? `${account.accountName} (${account.accountId})`
+          : account.accountName;
+
+        card.innerHTML = `
+          <div class="account-info">
+            <span class="account-provider">${account.provider} — ${account.programName}</span>
+            <span class="account-name">${displayName}</span>
+          </div>
+          <div class="account-pts">
+            <span class="pts-amount">${formatNumber(account.points)}</span>
+            <div class="pts-updated">Updated ${updatedTime}</div>
+          </div>
+        `;
+        groupDiv.appendChild(card);
+      });
+
+      accountsListContainer.appendChild(groupDiv);
     });
   });
 }

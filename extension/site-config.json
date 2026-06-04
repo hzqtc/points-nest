@@ -1,6 +1,7 @@
 [
   {
     "siteName": "Chase",
+    "category": "Bank",
     "urlRegex": "https://secure\\.chase\\.com/web/auth/dashboard#/dashboard/summary/[0-9]+/CARD/BAC",
     "selectors": {
       "accountName": ".nav-bar__print-header",
@@ -28,6 +29,7 @@
   },
   {
     "siteName": "Amex",
+    "category": "Bank",
     "urlRegex": "https://global\\.americanexpress\\.com/dashboard\\?account_key=[A-Z0-9]+",
     "selectors": {
       "accountName": "[data-testid=\"simple_switcher_display_label\"]",
@@ -52,6 +54,7 @@
   },
   {
     "siteName": "World of Hyatt",
+    "category": "Hotel",
     "urlRegex": "https://www.hyatt.com/profile/",
     "selectors": {
       "accountName": "[data-locator=\"name\"]",
@@ -68,6 +71,7 @@
   },
   {
     "siteName": "IHG",
+    "category": "Hotel",
     "urlRegex": "https://www.ihg.com/rewardsclub/[a-z]+/[a-z]+/account-mgmt/home",
     "selectors": {
       "accountName": "[data-testid=\"memberNameSID\"]",
@@ -87,6 +91,7 @@
   },
   {
     "siteName": "Hilton Honors",
+    "category": "Hotel",
     "urlRegex": "https://www.hilton.com/[a-z]+/hilton-honors/guest/my-account/",
     "selectors": {
       "accountName": "[data-testid=\"firstNameLabel\"]",

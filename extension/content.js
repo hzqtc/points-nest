@@ -174,6 +174,7 @@ async function runScraper(config) {
 
   const data = {
     provider: config.siteName,
+    category: config.category,
     accountName: accountName,
     accountId: accountId,
     programName: programName,
