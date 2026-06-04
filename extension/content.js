@@ -153,7 +153,7 @@ function normalizeString(value, rule) {
 async function runScraper(config) {
   let accountName = extractText(config.selectors.accountName);
   let accountId = extractText(config.selectors.accountId);
-  let programName = extractText(config.selectors.rewardsLabel);
+  let programName = extractText(config.selectors.programName);
   if (!accountName || !programName) {
     return false;
   }
@@ -173,7 +173,7 @@ async function runScraper(config) {
   const rewardsPoints = parseInt(rewardsValue, 10);
 
   const data = {
-    bank: config.siteName,
+    provider: config.siteName,
     accountName: accountName,
     accountId: accountId,
     programName: programName,

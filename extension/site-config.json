@@ -5,7 +5,7 @@
     "selectors": {
       "accountName": ".nav-bar__print-header",
       "accountId": ".nav-bar__print-header",
-      "rewardsLabel": [
+      "programName": [
         "[id$=\"Rewards-dataItem\"] [data-testid=\"dataItem-label\"] mds-definition-link::attr(definition-text)",
         "[id$=\"Rewards-dataItem\"] [data-testid=\"dataItem-label\"]"
       ],
@@ -32,7 +32,7 @@
     "selectors": {
       "accountName": "[data-testid=\"simple_switcher_display_label\"]",
       "accountId": "[data-testid=\"simple_switcher_display_label\"]",
-      "rewardsLabel": "[data-locator-id=\"membership_rewards_title\"]",
+      "programName": "[data-locator-id=\"membership_rewards_title\"]",
       "rewardsValue": "[data-locator-id=\"membership_rewards_title_value\"]"
     },
     "normalizations": {
@@ -56,7 +56,7 @@
     "selectors": {
       "accountName": "[data-locator=\"name\"]",
       "accountId": "[data-locator=\"member-number\"]",
-      "rewardsLabel": "[class^=\"MemberCard_tierLabel\"]",
+      "programName": "[class^=\"MemberCard_tierLabel\"]",
       "rewardsValue": "[data-locator=\"points-balance\"]"
     },
     "normalizations": {
@@ -72,7 +72,7 @@
     "selectors": {
       "accountName": "[data-testid=\"memberNameSID\"]",
       "accountId": "[data-testid=\"memberNumberSID\"]",
-      "rewardsLabel": "[data-testid=\"memberLevelNameSID\"]",
+      "programName": "[data-testid=\"memberLevelNameSID\"]",
       "rewardsValue": "[data-testid=\"pointsToRedeemSID\"]"
     },
     "normalizations": {
@@ -91,7 +91,7 @@
     "selectors": {
       "accountName": "[data-testid=\"firstNameLabel\"]",
       "accountId": "[data-testid=\"honorsNumberBlock\"]",
-      "rewardsLabel": "[data-testid=\"tierBlock\"] > div:first-of-type",
+      "programName": "[data-testid=\"tierBlock\"] > div:first-of-type",
       "rewardsValue": "[data-testid=\"honorsPointsBlock\"]"
     },
     "normalizations": {

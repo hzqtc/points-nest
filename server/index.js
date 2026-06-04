@@ -27,9 +27,19 @@ const JSON_FILE = path.join(__dirname, "../output/latest_points.json");
  * Ensures data files are initialized correctly.
  */
 function initializeFiles() {
+  const outputDir = path.dirname(CSV_FILE);
+  if (!fs.existsSync(outputDir)) {
+    fs.mkdirSync(outputDir, { recursive: true });
+    console.log(styleText("cyan", `Created output directory at: ${outputDir}`));
+  }
+
   // Initialize CSV with headers if it doesn't exist
   if (!fs.existsSync(CSV_FILE)) {
-    fs.writeFileSync(CSV_FILE, "Timestamp,Bank,AccountName,AccountID,ProgramName,Points\n", "utf8");
+    fs.writeFileSync(
+      CSV_FILE,
+      "Timestamp,Provider,AccountName,AccountID,ProgramName,Points\n",
+      "utf8",
+    );
     console.log(styleText("cyan", `Created new points history CSV at: ${CSV_FILE}`));
   }
 
@@ -43,15 +53,15 @@ function initializeFiles() {
 /**
  * Adds a row to the local CSV points log.
  */
-function appendToCSV(timestamp, bank, accountName, accountId, programName, points) {
-  const row = `${timestamp},${bank},${accountName},${accountId},${programName},${points}\n`;
+function appendToCSV(timestamp, provider, accountName, accountId, programName, points) {
+  const row = `${timestamp},${provider},${accountName},${accountId},${programName},${points}\n`;
   fs.appendFileSync(CSV_FILE, row, "utf8");
 }
 
 /**
  * Updates the latest points JSON cache.
  */
-function updateLatestJSON(timestamp, bank, accountName, accountId, programName, points) {
+function updateLatestJSON(timestamp, provider, accountName, accountId, programName, points) {
   let data = {};
   try {
     if (fs.existsSync(JSON_FILE)) {
@@ -64,10 +74,10 @@ function updateLatestJSON(timestamp, bank, accountName, accountId, programName, 
     );
   }
 
-  // Keyed by Bank + Account Name + Account ID to support multiple accounts and loyalty programs
-  const key = `${bank}_${accountName}_${accountId}`;
+  // Keyed by Provider + Account Name + Account ID to support multiple accounts and loyalty programs
+  const key = `${provider}_${accountName}_${accountId}`;
   data[key] = {
-    bank,
+    provider,
     accountName,
     accountId,
     programName,
@@ -103,14 +113,15 @@ const server = http.createServer((req, res) => {
     req.on("end", () => {
       try {
         const payload = JSON.parse(body);
-        const { bank, accountName, accountId, programName, points, timestamp } = payload;
+        const { provider, accountName, accountId, programName, points, timestamp } = payload;
         const resolvedAccountId = accountId || accountName;
 
-        if (!bank || !accountName || !programName || points === undefined || !timestamp) {
+        if (!provider || !accountName || !programName || points === undefined || !timestamp) {
           res.writeHead(400, { "Content-Type": "application/json" });
           res.end(
             JSON.stringify({
-              error: "Invalid payload schema. Require bank, accountName, points, and timestamp.",
+              error:
+                "Invalid payload schema. Require provider, accountName, points, and timestamp.",
             }),
           );
           return;
@@ -119,15 +130,15 @@ const server = http.createServer((req, res) => {
         console.log(
           "\n" + styleText(["green", "bold"], "➔ Received points update from Extension:"),
         );
-        console.log(`  Bank:    ${styleText("yellow", bank)}`);
-        console.log(`  Account: ${styleText("yellow", accountName)} (${resolvedAccountId})`);
-        console.log(`  Program: ${styleText("yellow", programName)}`);
-        console.log(`  Points:  ${styleText("yellow", points.toLocaleString())}`);
-        console.log(`  At:      ${styleText("yellow", new Date(timestamp).toLocaleTimeString())}`);
+        console.log(`  Provider: ${styleText("yellow", provider)}`);
+        console.log(`  Account:  ${styleText("yellow", accountName)} (${resolvedAccountId})`);
+        console.log(`  Program:  ${styleText("yellow", programName)}`);
+        console.log(`  Points:   ${styleText("yellow", points.toLocaleString())}`);
+        console.log(`  At:       ${styleText("yellow", new Date(timestamp).toLocaleTimeString())}`);
 
         // Write to local files
-        appendToCSV(timestamp, bank, accountName, resolvedAccountId, programName, points);
-        updateLatestJSON(timestamp, bank, accountName, resolvedAccountId, programName, points);
+        appendToCSV(timestamp, provider, accountName, resolvedAccountId, programName, points);
+        updateLatestJSON(timestamp, provider, accountName, resolvedAccountId, programName, points);
 
         res.writeHead(200, { "Content-Type": "application/json" });
         res.end(JSON.stringify({ success: true }));

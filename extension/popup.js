@@ -53,7 +53,7 @@ function renderData() {
 
       card.innerHTML = `
         <div class="account-info">
-          <span class="account-bank">${account.bank} — ${account.programName}</span>
+          <span class="account-provider">${account.provider} — ${account.programName}</span>
           <span class="account-name">${displayName}</span>
         </div>
         <div class="account-pts">
