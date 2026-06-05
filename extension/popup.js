@@ -29,6 +29,7 @@ function renderData() {
     const accountsListContainer = document.getElementById("accounts-list");
 
     if (accounts.length === 0) {
+      document.body.classList.remove("two-column");
       accountsListContainer.innerHTML = `
         <div class="empty-state">
           <p>No accounts tracked yet.</p>
@@ -40,62 +41,101 @@ function renderData() {
     // Group accounts by category
     const knownCategories = ["Bank", "Hotel", "Airline"];
     const grouped = {};
+    const groupSize = {};
     accounts.forEach((account) => {
-      let category = account.category;
-      if (!knownCategories.includes(category)) {
-        category = "Other";
-      }
+      let category = knownCategories.includes(account.category) ? account.category : "Other";
       if (!grouped[category]) {
         grouped[category] = [];
+        groupSize[category] = 0;
       }
       grouped[category].push(account);
+      groupSize[category]++;
     });
 
     // Sort accounts within each category by points descending
     Object.keys(grouped).forEach((cat) => {
       grouped[cat].sort((a, b) => b.points - a.points);
     });
+    const sortedCategories = Object.entries(groupSize)
+      .sort((a, b) => b[1] - a[1]) // Reverse sort by value (index 1)
+      .map((entry) => entry[0]); // Get key (category)
 
-    const finalCategories = [...knownCategories, "Other"];
-    // Populate UI
     accountsListContainer.innerHTML = "";
-    finalCategories.forEach((cat) => {
-      const items = grouped[cat];
-      if (!items || items.length === 0) return;
+    if (sortedCategories.length === 1) {
+      // Single column layout
+      document.body.classList.remove("two-column");
+      const colDiv = document.createElement("div");
+      colDiv.className = "accounts-column";
+      colDiv.appendChild(createCategoryGroup(sortedCategories[0], grouped[sortedCategories[0]]));
+      accountsListContainer.appendChild(colDiv);
+    } else {
+      // 2-column balanced layout
+      const colA = [];
+      const colB = [];
+      let colARows = 0;
+      let colBRows = 0;
+      for (let i = 0; i < sortedCategories.length; i++) {
+        if (colARows <= colBRows) {
+          colA.push(sortedCategories[i]);
+          colARows += grouped[sortedCategories[i]].length;
+        } else {
+          colB.push(sortedCategories[i]);
+          colBRows += grouped[sortedCategories[i]].length;
+        }
+      }
 
-      const groupDiv = document.createElement("div");
-      groupDiv.className = "category-group";
-
-      const titleDiv = document.createElement("div");
-      titleDiv.className = "category-title";
-      titleDiv.textContent = cat;
-      groupDiv.appendChild(titleDiv);
-
-      items.forEach((account) => {
-        const card = document.createElement("div");
-        card.className = "account-card";
-
-        const updatedTime = getRelativeTime(account.timestamp);
-        const displayName = account.accountId
-          ? `${account.accountName} (${account.accountId})`
-          : account.accountName;
-
-        card.innerHTML = `
-          <div class="account-info">
-            <span class="account-provider">${account.provider} — ${account.programName}</span>
-            <span class="account-name">${displayName}</span>
-          </div>
-          <div class="account-pts">
-            <span class="pts-amount">${formatNumber(account.points)}</span>
-            <div class="pts-updated">Updated ${updatedTime}</div>
-          </div>
-        `;
-        groupDiv.appendChild(card);
+      document.body.classList.add("two-column");
+      const colADiv = document.createElement("div");
+      colADiv.className = "accounts-column";
+      colA.forEach((cat) => {
+        colADiv.appendChild(createCategoryGroup(cat, grouped[cat]));
       });
-
-      accountsListContainer.appendChild(groupDiv);
-    });
+      const colBDiv = document.createElement("div");
+      colBDiv.className = "accounts-column";
+      colB.forEach((cat) => {
+        colBDiv.appendChild(createCategoryGroup(cat, grouped[cat]));
+      });
+      accountsListContainer.appendChild(colADiv);
+      accountsListContainer.appendChild(colBDiv);
+    }
   });
+}
+
+/**
+ * Creates and returns a styled category group element.
+ */
+function createCategoryGroup(cat, items) {
+  const groupDiv = document.createElement("div");
+  groupDiv.className = "category-group";
+
+  const titleDiv = document.createElement("div");
+  titleDiv.className = "category-title";
+  titleDiv.textContent = cat;
+  groupDiv.appendChild(titleDiv);
+
+  items.forEach((account) => {
+    const card = document.createElement("div");
+    card.className = "account-card";
+
+    const updatedTime = getRelativeTime(account.timestamp);
+    const displayName = account.accountId
+      ? `${account.accountName} (${account.accountId})`
+      : account.accountName;
+
+    card.innerHTML = `
+      <div class="account-info">
+        <span class="account-provider">${account.provider} — ${account.programName}</span>
+        <span class="account-name">${displayName}</span>
+      </div>
+      <div class="account-pts">
+        <span class="pts-amount">${formatNumber(account.points)}</span>
+        <div class="pts-updated">Updated ${updatedTime}</div>
+      </div>
+    `;
+    groupDiv.appendChild(card);
+  });
+
+  return groupDiv;
 }
 
 /**
