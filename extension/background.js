@@ -9,6 +9,17 @@ chrome.runtime.onMessage.addListener((message) => {
     const pointsData = message.payload;
     console.log("[Points Tracker] Received points update in background:", pointsData);
     saveToChromeStorage(pointsData);
+
+    // Set toolbar icon to the active state (with a red dot)
+    chrome.action.setIcon({
+      path: {
+        "16": "icon16-active.png",
+        "32": "icon32-active.png",
+        "48": "icon48-active.png",
+        "128": "icon128-active.png"
+      }
+    });
+
     // Keep the message port open for asynchronous execution
     return true;
   }
