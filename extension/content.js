@@ -135,7 +135,7 @@ function normalizeString(value, rule) {
     if (rule.transform) {
       const transform = rule.transform.toLowerCase();
       if (transform === "titlecase") {
-        result = result.replace(/\b\w/g, (char) => char.toUpperCase());
+        result = result.toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
       } else if (transform === "uppercase") {
         result = result.toUpperCase();
       } else if (transform === "lowercase") {

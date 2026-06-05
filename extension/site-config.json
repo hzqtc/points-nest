@@ -64,8 +64,9 @@
     },
     "normalizations": {
       "accountName": {
-        "pattern": "^(?:Mr|Mrs|Ms|Miss|Dr|Prof)\\.?\\s+",
-        "replace": ""
+        "pattern": "^(?:Mr|Mrs|Ms|Miss|Dr|Prof)\\.?\\s+([^\\s]+).*",
+        "replace": "$1",
+        "transform": "titlecase"
       }
     }
   },
@@ -117,6 +118,11 @@
       "rewardsValue": ".available-points-container .points-value"
     },
     "normalizations": {
+      "accountName": {
+        "pattern": "^([^\\s]+).*",
+        "replace": "$1",
+        "transform": "titlecase"
+      },
       "accountId": {
         "pattern": "Rewards No. ",
         "replace": ""
