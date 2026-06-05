@@ -198,4 +198,46 @@ body.two-column {
   padding-bottom: 4px;
 }
 
+/* Highlight/Animation for recently updated cards */
+@keyframes highlight-fade {
+  0% {
+    background-color: rgba(37, 99, 235, 0.15);
+    border-color: var(--accent-color);
+    box-shadow: 0 0 12px rgba(37, 99, 235, 0.3);
+  }
+  100% {
+    background-color: var(--bg-secondary);
+    border-color: var(--border-color);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  }
+}
 
+.account-card.highlighted {
+  animation: highlight-fade 4s ease-out forwards;
+}
+
+.account-card.highlighted.change-up .pts-amount::after {
+  content: ' ↑';
+  color: #10b981;
+  font-weight: 700;
+  margin-left: 4px;
+}
+
+.account-card.highlighted.change-down .pts-amount::after {
+  content: ' ↓';
+  color: #ef4444;
+  font-weight: 700;
+  margin-left: 4px;
+}
+
+.account-card.highlighted.change-new .pts-amount::after {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background-color: #10b981;
+  border-radius: 50%;
+  margin-left: 6px;
+  vertical-align: middle;
+  box-shadow: 0 0 6px #10b981;
+}

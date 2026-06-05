@@ -191,6 +191,7 @@ async function runScraper(config) {
   const lastCaptured = latestBalanceMap.get(primaryKey);
   // Only send if the balance has changed to prevent infinite loops / spam
   if (!lastCaptured || lastCaptured.points !== data.points) {
+    data.change = lastCaptured ? data.points - lastCaptured.points : null;
     latestBalanceMap.set(primaryKey, data);
     chrome.runtime.sendMessage({
       type: "POINTS_UPDATED",

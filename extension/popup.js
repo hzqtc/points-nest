@@ -148,6 +148,22 @@ function createCategoryGroup(cat, items, configs) {
       icon: iconUrl,
     });
 
+    // Highlight the card and add change arrow classes if updated recently (e.g. within last 24 hours)
+    const cardEl = clone.querySelector(".account-card");
+    if (cardEl && account.timestamp) {
+      const elapsedMs = Date.now() - new Date(account.timestamp).getTime();
+      if (elapsedMs < 86400000) {
+        cardEl.classList.add("highlighted");
+        if (account.change > 0) {
+          cardEl.classList.add("change-up");
+        } else if (account.change < 0) {
+          cardEl.classList.add("change-down");
+        } else if (account.change === null || account.change === undefined) {
+          cardEl.classList.add("change-new");
+        }
+      }
+    }
+
     groupDiv.appendChild(clone);
   });
 
