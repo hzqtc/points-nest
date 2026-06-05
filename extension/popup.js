@@ -39,23 +39,23 @@ function renderData() {
     }
 
     // Group accounts by category
-    const knownCategories = ["Bank", "Hotel", "Airline"];
     const grouped = {};
     const groupSize = {};
     accounts.forEach((account) => {
-      let category = knownCategories.includes(account.category) ? account.category : "Other";
-      if (!grouped[category]) {
-        grouped[category] = [];
-        groupSize[category] = 0;
+      let cat = account.category;
+      if (!grouped[cat]) {
+        grouped[cat] = [];
+        groupSize[cat] = 0;
       }
-      grouped[category].push(account);
-      groupSize[category]++;
+      grouped[cat].push(account);
+      groupSize[cat]++;
     });
 
     // Sort accounts within each category by points descending
     Object.keys(grouped).forEach((cat) => {
       grouped[cat].sort((a, b) => b.points - a.points);
     });
+    // Sort categories by number of accounts
     const sortedCategories = Object.entries(groupSize)
       .sort((a, b) => b[1] - a[1]) // Reverse sort by value (index 1)
       .map((entry) => entry[0]); // Get key (category)
