@@ -126,5 +126,26 @@
         "replace": ""
       }
     }
+  },
+  {
+    "siteName": "Delta Skymiles",
+    "category": "Airline",
+    "urlRegex": [
+      "https://www.delta.com/myskymiles",
+      "https://www.delta.com/my-trips",
+      "https://www.delta.com/my-profile"
+    ],
+    "selectors": {
+      "accountName": ".skymiles-medallion-banner .skymiles-medallion-banner__details__container__left__title > div:nth-of-type(2)",
+      "accountId": ".skymiles-medallion-banner .skymiles-medallion-banner__details__container__right__skymiles-wrapper:first-of-type .skymiles-medallion-banner__details__container__right__skymiles-wrapper__subtitle",
+      "programName": ".skymiles-medallion-banner .skymiles-medallion-banner__status__container__tier__wrapper__subtitle",
+      "rewardsValue": ".skymiles-medallion-banner .skymiles-medallion-banner__details__container__right__skymiles-wrapper:nth-of-type(2) .skymiles-medallion-banner__details__container__right__skymiles-wrapper__subtitle"
+    },
+    "normalizations": {
+      "programName": {
+        "pattern": "SKYMILES® ",
+        "replace": ""
+      }
+    }
   }
 ]

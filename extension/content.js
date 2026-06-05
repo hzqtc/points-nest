@@ -50,9 +50,13 @@ function getActiveConfig() {
   const currentUrl = window.location.href;
   return scraperConfigs.find((site) => {
     try {
-      const regex = new RegExp(site.urlRegex, "i");
-      return regex.test(currentUrl);
+      const patterns = Array.isArray(site.urlRegex) ? site.urlRegex : [site.urlRegex];
+      return patterns.some((pattern) => {
+        const regex = new RegExp(pattern, "i");
+        return regex.test(currentUrl);
+      });
     } catch (e) {
+      console.error(`[Points Tracker] Invalid url regex: ${patterns}`, e);
       return false;
     }
   });
