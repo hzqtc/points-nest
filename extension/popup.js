@@ -1,19 +1,15 @@
 /**
  * popup.js
- * Renders points overview, checks local daemon connectivity,
+ * Renders points overview.
  */
 
 document.addEventListener("DOMContentLoaded", () => {
   renderData();
-  checkDaemonStatus();
 
   // Listen for storage changes to refresh UI instantly
   chrome.storage.onChanged.addListener((changes) => {
     if (changes.latestBalances) {
       renderData();
-    }
-    if (changes.daemonConnected || changes.daemonError) {
-      checkDaemonStatus();
     }
   });
 });
@@ -172,27 +168,6 @@ function bindData(element, data) {
     const key = el.getAttribute("data-src");
     if (data[key] !== undefined) {
       el.src = data[key];
-    }
-  });
-}
-
-/**
- * Checks local daemon server connectivity by checking background variables
- */
-function checkDaemonStatus() {
-  chrome.storage.local.get(["daemonConnected", "daemonError"], (result) => {
-    const badge = document.getElementById("daemon-status");
-    const badgeText = badge.querySelector(".status-text");
-
-    if (result.daemonConnected) {
-      badge.className = "status-badge online";
-      badgeText.textContent = "Daemon Online";
-    } else {
-      badge.className = "status-badge offline";
-      badgeText.textContent = "Daemon Offline";
-      if (result.daemonError) {
-        console.warn("[Points Tracker] Daemon connection issue:", result.daemonError);
-      }
     }
   });
 }

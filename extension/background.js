@@ -1,21 +1,7 @@
 /**
  * background.js
  * Chrome Extension background service worker.
- * Listens for scraped points and forwards them to the local companion server.
  */
-
-let reportUrl = null;
-
-// Load shared constants dynamically from the symlinked shared directory
-fetch(chrome.runtime.getURL("constants.json"))
-  .then((res) => res.json())
-  .then((constants) => {
-    reportUrl = `http://localhost:${constants.PORT}${constants.API_PATH}`;
-    console.log("[Points Tracker] Loaded shared server constants:", reportUrl);
-  })
-  .catch((err) => {
-    console.error("[Points Tracker] Failed to load shared/constants.json:", err);
-  });
 
 // Listen for messages from content.js
 chrome.runtime.onMessage.addListener((message) => {
@@ -23,7 +9,6 @@ chrome.runtime.onMessage.addListener((message) => {
     const pointsData = message.payload;
     console.log("[Points Tracker] Received points update in background:", pointsData);
     saveToChromeStorage(pointsData);
-    forwardToLocalServer(pointsData);
     // Keep the message port open for asynchronous execution
     return true;
   }
@@ -52,44 +37,6 @@ function saveToChromeStorage(data) {
       console.log("[Points Tracker] Points synced to Chrome storage across devices.");
     });
   });
-}
-
-/**
- * Posts the points update to the local companion daemon.
- */
-function forwardToLocalServer(data) {
-  fetch(reportUrl, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      return response.json();
-    })
-    .then((responseData) => {
-      console.log(
-        "[Points Tracker] Successfully sent points to local companion daemon:",
-        responseData,
-      );
-      // Save daemon connection status
-      chrome.storage.local.set({ daemonConnected: true, daemonError: null });
-    })
-    .catch((error) => {
-      console.warn(
-        "[Points Tracker] Local companion daemon is offline or unreachable:",
-        error.message,
-      );
-      // Save daemon connection status
-      chrome.storage.local.set({
-        daemonConnected: false,
-        daemonError: "Local companion daemon offline.",
-      });
-    });
 }
 
 console.log("[Points Tracker] Background service worker loaded.");

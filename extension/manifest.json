@@ -12,8 +12,7 @@
     "https://www.hilton.com/*",
     "https://www.alaskaair.com/*",
     "https://www.delta.com/*",
-    "https://www.united.com/*",
-    "http://localhost:5586/*"
+    "https://www.united.com/*"
   ],
   "action": {
     "default_popup": "popup.html",

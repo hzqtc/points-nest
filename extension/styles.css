@@ -12,10 +12,6 @@
   --text-secondary: #64748b;
   --accent-color: #2563eb;
   --accent-hover: #1d4ed8;
-
-  /* Status Colors */
-  --color-online: #10b981;
-  --color-offline: #ef4444;
 }
 
 * {
@@ -65,39 +61,6 @@ body.two-column {
   font-weight: 500;
   color: var(--text-secondary);
   margin-left: 4px;
-}
-
-.status-badge {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: var(--bg-secondary);
-  padding: 4px 10px;
-  border-radius: 20px;
-  border: 1px solid var(--border-color);
-}
-
-.status-indicator {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background-color: var(--text-secondary);
-}
-
-.status-badge.online .status-indicator {
-  background-color: var(--color-online);
-}
-
-.status-badge.offline .status-indicator {
-  background-color: var(--color-offline);
-}
-
-.status-text {
-  font-size: 10px;
-  font-weight: 600;
-  color: var(--text-primary);
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
 }
 
 /* Accounts Section */
