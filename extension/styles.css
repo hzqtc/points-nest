@@ -136,6 +136,23 @@ body.two-column {
   gap: 2px;
 }
 
+.account-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.account-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  object-fit: contain;
+  flex-shrink: 0;
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  padding: 1px;
+}
+
 .account-provider {
   font-size: 10px;
   font-weight: 700;

@@ -2,6 +2,7 @@
   {
     "siteName": "Chase",
     "category": "Bank",
+    "icon": "https://www.chase.com/favicon.ico",
     "urlRegex": "https://secure\\.chase\\.com/web/auth/dashboard#/dashboard/summary/[0-9]+/CARD/BAC",
     "selectors": {
       "accountName": ".nav-bar__print-header",
@@ -30,6 +31,7 @@
   {
     "siteName": "Amex",
     "category": "Bank",
+    "icon": "https://www.americanexpress.com/favicon.ico",
     "urlRegex": "https://global\\.americanexpress\\.com/dashboard\\?account_key=[A-Z0-9]+",
     "selectors": {
       "accountName": "[data-testid=\"simple_switcher_display_label\"]",
@@ -55,6 +57,7 @@
   {
     "siteName": "World of Hyatt",
     "category": "Hotel",
+    "icon": "https://www.hyatt.com/favicon.ico",
     "urlRegex": "https://www.hyatt.com/profile/",
     "selectors": {
       "accountName": "[data-locator=\"name\"]",
@@ -73,6 +76,7 @@
   {
     "siteName": "IHG",
     "category": "Hotel",
+    "icon": "https://www.ihg.com/favicon.ico",
     "urlRegex": "https://www.ihg.com/rewardsclub/[a-z]+/[a-z]+/account-mgmt/home",
     "selectors": {
       "accountName": "[data-testid=\"memberNameSID\"]",
@@ -93,6 +97,7 @@
   {
     "siteName": "Hilton Honors",
     "category": "Hotel",
+    "icon": "https://www.hilton.com/favicon.ico",
     "urlRegex": "https://www.hilton.com/[a-z]+/hilton-honors/guest/my-account/",
     "selectors": {
       "accountName": "[data-testid=\"firstNameLabel\"]",
@@ -110,6 +115,7 @@
   {
     "siteName": "Alaska Atmos",
     "category": "Airline",
+    "icon": "https://www.alaskaair.com/favicon.ico",
     "urlRegex": "https://www.alaskaair.com/atmosrewards/account/overview/",
     "selectors": {
       "accountName": ".member-info .display-name",
@@ -136,6 +142,7 @@
   {
     "siteName": "Delta Skymiles",
     "category": "Airline",
+    "icon": "https://www.delta.com/favicon.ico",
     "urlRegex": [
       "https://www.delta.com/myskymiles",
       "https://www.delta.com/my-trips",
@@ -157,6 +164,7 @@
   {
     "siteName": "United MileagePlus",
     "category": "Airline",
+    "icon": "https://www.united.com/favicon.ico",
     "urlRegex": "https://www.united.com/[a-z]+/[a-z]+/myunited",
     "selectors": {
       "accountName": "[class*=\"app-components-Navigation-styles__navigationContainer\"] .atm-c-box-section__header",
@@ -178,5 +186,10 @@
         "replace": ""
       }
     }
+  },
+  {
+    "siteName": "Bilt",
+    "category": "Other",
+    "icon": "https://www.bilt.com/favicon.ico"
   }
 ]

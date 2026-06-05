@@ -21,7 +21,23 @@ document.addEventListener("DOMContentLoaded", () => {
 /**
  * Renders the points dashboard using saved data in chrome.storage.sync.
  */
-function renderData() {
+let scraperConfigs = null;
+
+async function loadConfig() {
+  if (scraperConfigs) return scraperConfigs;
+  try {
+    const url = chrome.runtime.getURL("site-config.json");
+    const response = await fetch(url);
+    scraperConfigs = await response.json();
+    return scraperConfigs;
+  } catch (error) {
+    console.error("[Points Tracker] Failed to load site-config.json:", error);
+    return [];
+  }
+}
+
+async function renderData() {
+  const configs = await loadConfig();
   chrome.storage.sync.get(["latestBalances"], (result) => {
     const latestBalances = result.latestBalances || {};
     const accounts = Object.values(latestBalances);
@@ -69,7 +85,9 @@ function renderData() {
       document.body.classList.remove("two-column");
       const colDiv = document.createElement("div");
       colDiv.className = "accounts-column";
-      colDiv.appendChild(createCategoryGroup(sortedCategories[0], grouped[sortedCategories[0]]));
+      colDiv.appendChild(
+        createCategoryGroup(sortedCategories[0], grouped[sortedCategories[0]], configs),
+      );
       accountsListContainer.appendChild(colDiv);
     } else {
       // 2-column balanced layout
@@ -91,12 +109,12 @@ function renderData() {
       const colADiv = document.createElement("div");
       colADiv.className = "accounts-column";
       colA.forEach((cat) => {
-        colADiv.appendChild(createCategoryGroup(cat, grouped[cat]));
+        colADiv.appendChild(createCategoryGroup(cat, grouped[cat], configs));
       });
       const colBDiv = document.createElement("div");
       colBDiv.className = "accounts-column";
       colB.forEach((cat) => {
-        colBDiv.appendChild(createCategoryGroup(cat, grouped[cat]));
+        colBDiv.appendChild(createCategoryGroup(cat, grouped[cat], configs));
       });
       accountsListContainer.appendChild(colADiv);
       accountsListContainer.appendChild(colBDiv);
@@ -107,7 +125,7 @@ function renderData() {
 /**
  * Creates and returns a styled category group element.
  */
-function createCategoryGroup(cat, items) {
+function createCategoryGroup(cat, items, configs) {
   const groupDiv = document.createElement("div");
   groupDiv.className = "category-group";
 
@@ -121,15 +139,17 @@ function createCategoryGroup(cat, items) {
 
   items.forEach((account) => {
     const clone = cardTemplate.content.cloneNode(true);
-
     const updatedTime = getRelativeTime(account.timestamp);
     const displayName = `${account.accountName} (${account.accountId})`;
+    const siteConfig = configs.find((c) => c.siteName === account.provider);
+    const iconUrl = siteConfig ? siteConfig.icon : "";
 
     bindData(clone, {
       title: `${account.provider} — ${account.programName}`,
       account: displayName,
       points: formatNumber(account.points),
       updated: `Updated ${updatedTime}`,
+      icon: iconUrl,
     });
 
     groupDiv.appendChild(clone);
@@ -139,13 +159,19 @@ function createCategoryGroup(cat, items) {
 }
 
 /**
- * Binds values to matching data-text elements inside a container.
+ * Binds values to matching data-text and data-src elements inside a container.
  */
 function bindData(element, data) {
   element.querySelectorAll("[data-text]").forEach((el) => {
     const key = el.getAttribute("data-text");
     if (data[key] !== undefined) {
       el.textContent = data[key];
+    }
+  });
+  element.querySelectorAll("[data-src]").forEach((el) => {
+    const key = el.getAttribute("data-src");
+    if (data[key] !== undefined) {
+      el.src = data[key];
     }
   });
 }
