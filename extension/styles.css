@@ -60,6 +60,13 @@ body.two-column {
   color: var(--text-primary);
 }
 
+.title-total {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-left: 4px;
+}
+
 .status-badge {
   display: flex;
   align-items: center;

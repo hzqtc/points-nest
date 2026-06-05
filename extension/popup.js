@@ -26,6 +26,11 @@ function renderData() {
     const latestBalances = result.latestBalances || {};
     const accounts = Object.values(latestBalances);
 
+    // Calculate and display overall points total next to the app title
+    const overallTotal = accounts.reduce((sum, account) => sum + account.points, 0);
+    const appTitleEl = document.querySelector(".app-title");
+    appTitleEl.innerHTML = `Points Tracker <span class="title-total">(${formatNumber(overallTotal)} pts)</span>`;
+
     const accountsListContainer = document.getElementById("accounts-list");
 
     if (accounts.length === 0) {
@@ -110,7 +115,8 @@ function createCategoryGroup(cat, items) {
 
   const titleDiv = document.createElement("div");
   titleDiv.className = "category-title";
-  titleDiv.textContent = cat;
+  const totalPoints = items.reduce((sum, item) => sum + item.points, 0);
+  titleDiv.textContent = `${cat} (${formatNumber(totalPoints)} pts)`;
   groupDiv.appendChild(titleDiv);
 
   items.forEach((account) => {
