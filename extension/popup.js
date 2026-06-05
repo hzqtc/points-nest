@@ -28,18 +28,15 @@ function renderData() {
 
     // Calculate and display overall points total next to the app title
     const overallTotal = accounts.reduce((sum, account) => sum + account.points, 0);
-    const appTitleEl = document.querySelector(".app-title");
-    appTitleEl.innerHTML = `Points Tracker <span class="title-total">(${formatNumber(overallTotal)} pts)</span>`;
-
+    const titleTotalEl = document.getElementById("title-total");
+    titleTotalEl.textContent = `(${formatNumber(overallTotal)} pts)`;
     const accountsListContainer = document.getElementById("accounts-list");
 
     if (accounts.length === 0) {
       document.body.classList.remove("two-column");
-      accountsListContainer.innerHTML = `
-        <div class="empty-state">
-          <p>No accounts tracked yet.</p>
-        </div>
-      `;
+      accountsListContainer.replaceChildren();
+      const emptyTemplate = document.getElementById("empty-state-template");
+      accountsListContainer.appendChild(emptyTemplate.content.cloneNode(true));
       return;
     }
 
@@ -65,7 +62,8 @@ function renderData() {
       .sort((a, b) => b[1] - a[1]) // Reverse sort by value (index 1)
       .map((entry) => entry[0]); // Get key (category)
 
-    accountsListContainer.innerHTML = "";
+    accountsListContainer.replaceChildren();
+
     if (sortedCategories.length === 1) {
       // Single column layout
       document.body.classList.remove("two-column");
@@ -119,29 +117,37 @@ function createCategoryGroup(cat, items) {
   titleDiv.textContent = `${cat} (${formatNumber(totalPoints)} pts)`;
   groupDiv.appendChild(titleDiv);
 
+  const cardTemplate = document.getElementById("account-card-template");
+
   items.forEach((account) => {
-    const card = document.createElement("div");
-    card.className = "account-card";
+    const clone = cardTemplate.content.cloneNode(true);
 
     const updatedTime = getRelativeTime(account.timestamp);
-    const displayName = account.accountId
-      ? `${account.accountName} (${account.accountId})`
-      : account.accountName;
+    const displayName = `${account.accountName} (${account.accountId})`;
 
-    card.innerHTML = `
-      <div class="account-info">
-        <span class="account-provider">${account.provider} — ${account.programName}</span>
-        <span class="account-name">${displayName}</span>
-      </div>
-      <div class="account-pts">
-        <span class="pts-amount">${formatNumber(account.points)}</span>
-        <div class="pts-updated">Updated ${updatedTime}</div>
-      </div>
-    `;
-    groupDiv.appendChild(card);
+    bindData(clone, {
+      title: `${account.provider} — ${account.programName}`,
+      account: displayName,
+      points: formatNumber(account.points),
+      updated: `Updated ${updatedTime}`,
+    });
+
+    groupDiv.appendChild(clone);
   });
 
   return groupDiv;
+}
+
+/**
+ * Binds values to matching data-text elements inside a container.
+ */
+function bindData(element, data) {
+  element.querySelectorAll("[data-text]").forEach((el) => {
+    const key = el.getAttribute("data-text");
+    if (data[key] !== undefined) {
+      el.textContent = data[key];
+    }
+  });
 }
 
 /**

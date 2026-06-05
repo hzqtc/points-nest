@@ -14,7 +14,7 @@
   <div class="app-container">
     <!-- Header -->
     <header class="app-header">
-      <h1 class="app-title">Points Tracker</h1>
+      <h1 class="app-title">Points Tracker <span class="title-total" id="title-total"></span></h1>
       <div class="status-badge" id="daemon-status">
         <span class="status-indicator"></span>
         <span class="status-text">Checking...</span>
@@ -31,6 +31,28 @@
       </div>
     </section>
   </div>
+
+  <!-- Template for Empty State -->
+  <template id="empty-state-template">
+    <div class="empty-state">
+      <p>No accounts tracked yet.</p>
+      <span>Log in to your Chase portal to sync balances automatically.</span>
+    </div>
+  </template>
+
+  <!-- Template for Account Card -->
+  <template id="account-card-template">
+    <div class="account-card">
+      <div class="account-info">
+        <span class="account-provider" data-text="title"></span>
+        <span class="account-name" data-text="account"></span>
+      </div>
+      <div class="account-pts">
+        <span class="pts-amount" data-text="points"></span>
+        <div class="pts-updated" data-text="updated"></div>
+      </div>
+    </div>
+  </template>
 
   <script src="popup.js"></script>
 </body>
