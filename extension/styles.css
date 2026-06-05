@@ -41,7 +41,7 @@ body.two-column {
 .app-container {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 8px;
 }
 
 /* Header */
@@ -50,11 +50,11 @@ body.two-column {
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid var(--border-color);
-  padding-bottom: 12px;
+  padding-bottom: 8px;
 }
 
 .app-title {
-  font-size: 17px;
+  font-size: 15px;
   font-weight: 700;
   letter-spacing: -0.2px;
   color: var(--text-primary);
@@ -119,7 +119,7 @@ body.two-column {
   align-items: center;
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
-  padding: 12px 14px;
+  padding: 8px;
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
@@ -145,7 +145,7 @@ body.two-column {
 }
 
 .account-name {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--text-primary);
 }
@@ -158,7 +158,7 @@ body.two-column {
 }
 
 .pts-amount {
-  font-size: 17px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--text-primary);
   letter-spacing: -0.2px;
