@@ -147,5 +147,30 @@
         "replace": ""
       }
     }
+  },
+  {
+    "siteName": "United MileagePlus",
+    "category": "Airline",
+    "urlRegex": "https://www.united.com/[a-z]+/[a-z]+/myunited",
+    "selectors": {
+      "accountName": "[class*=\"app-components-Navigation-styles__navigationContainer\"] .atm-c-box-section__header",
+      "accountId": "[class*=\"app-components-MyUnited-AccountSummaryDetails-AccountSummary-accountSummary__mpNumber\"]",
+      "programName": "[class*=\"app-components-MyUnited-AccountSummaryDetails-Badge\"]::attr(aria-label)",
+      "rewardsValue": "[class*=\"app-components-MyUnited-AccountSummaryDetails-MileageBalance-MileageBalance__totalMiles\"]"
+    },
+    "normalizations": {
+      "accountName": {
+        "pattern": "Hello, ",
+        "replace": ""
+      },
+      "accountId": {
+        "pattern": "MileagePlus Number",
+        "replace": ""
+      },
+      "programName": {
+        "pattern": " Badge",
+        "replace": ""
+      }
+    }
   }
 ]

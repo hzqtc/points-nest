@@ -12,6 +12,7 @@
     "https://www.hilton.com/*",
     "https://www.alaskaair.com/*",
     "https://www.delta.com/*",
+    "https://www.united.com/*",
     "http://localhost:5586/*"
   ],
   "action": {
@@ -30,7 +31,8 @@
         "https://www.ihg.com/*",
         "https://www.hilton.com/*",
         "https://www.alaskaair.com/*",
-        "https://www.delta.com/*"
+        "https://www.delta.com/*",
+        "https://www.united.com/*"
       ],
       "js": ["content.js"],
       "run_at": "document_end"
@@ -46,7 +48,8 @@
         "https://www.ihg.com/*",
         "https://www.hilton.com/*",
         "https://www.alaskaair.com/*",
-        "https://www.delta.com/*"
+        "https://www.delta.com/*",
+        "https://www.united.com/*"
       ]
     }
   ]
