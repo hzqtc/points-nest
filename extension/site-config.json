@@ -113,6 +113,24 @@
     }
   },
   {
+    "siteName": "Marriott Bonvoy",
+    "category": "Hotel",
+    "icon": "https://www.marriott.com/favicon.ico",
+    "urlRegex": "https://www.marriott.com/loyalty/myAccount/default.mi",
+    "selectors": {
+      "accountName": ".member-status-v3__profile-details [data-testid=\"ui-library-Heading\"]",
+      "accountId": "[data-testid=\"membersnapshotribbon-v2\"] .card__header [data-testid=\"ui-library-Text\"]",
+      "programName": "[data-testid=\"membersnapshotribbon-v2\"] .card__header [data-testid=\"ui-library-Heading\"]",
+      "rewardsValue": "[data-testid=\"account-WalletWidget\"] .points_wrapper span.t-title-s"
+    },
+    "normalizations": {
+      "accountName": {
+        "pattern": "Hi, ([^\\s]+).*",
+        "replace": "$1"
+      }
+    }
+  },
+  {
     "siteName": "Alaska Atmos",
     "category": "Airline",
     "icon": "https://www.alaskaair.com/favicon.ico",

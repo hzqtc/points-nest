@@ -101,7 +101,7 @@ function extractText(selectorInput) {
       if (attrName) {
         value = el.getAttribute(attrName);
       } else {
-        value = el.textContent ? el.textContent.trim() : "";
+        value = el.textContent;
       }
       if (value && value.trim()) {
         return value.trim();
@@ -154,12 +154,12 @@ function normalizeString(value, rule) {
  * Returns true if scraping succeeded or if active config is null (no need to retry).
  * Returns false if elements are not loaded yet or if an extraction error occurs, indicating a retry is needed.
  */
-async function runScraper(config) {
+async function scrapeData(config) {
   let accountName = extractText(config.selectors.accountName);
   let accountId = extractText(config.selectors.accountId);
   let programName = extractText(config.selectors.programName);
-  if (!accountName || !programName) {
-    return false;
+  if (!accountName || !accountId || !programName) {
+    return null;
   }
   if (config.normalizations) {
     accountName = normalizeString(accountName, config.normalizations.accountName);
@@ -167,16 +167,20 @@ async function runScraper(config) {
     programName = normalizeString(programName, config.normalizations.programName);
   }
 
-  const rewardsValue = extractText(config.selectors.rewardsValue).replace(/,/g, "").trim();
+  const rawRewardsText = extractText(config.selectors.rewardsValue);
+  if (!rawRewardsText) {
+    return null;
+  }
+  const rewardsValue = rawRewardsText.replace(/,/g, "").trim();
   if (!rewardsValue.match(/^(\d+)$/)) {
     console.error(
-      `[Points Tracker] Rewards value text "${valueText}" was malformatted and did not contain a valid number.`,
+      `[Points Tracker] Rewards value text "${rewardsValue}" was malformatted and did not contain a valid number.`,
     );
-    return false;
+    return null;
   }
   const rewardsPoints = parseInt(rewardsValue, 10);
 
-  const data = {
+  return {
     provider: config.siteName,
     category: config.category,
     accountName: accountName,
@@ -185,9 +189,10 @@ async function runScraper(config) {
     points: rewardsPoints,
     timestamp: new Date().toISOString(),
   };
-  console.log("[Points Tracker] Scraped rewards data successfully:", data);
+}
 
-  const primaryKey = `${config.siteName}_${accountName}_${accountId}`;
+function maybeSendData(data) {
+  const primaryKey = `${data.provider}_${data.accountName}_${data.accountId}`;
   const lastCaptured = latestBalanceMap.get(primaryKey);
   // Only send if the balance has changed to prevent infinite loops / spam
   if (!lastCaptured || lastCaptured.points !== data.points) {
@@ -198,7 +203,6 @@ async function runScraper(config) {
       payload: data,
     });
   }
-  return true;
 }
 
 let scrapeAttemptsInterval = null;
@@ -226,23 +230,41 @@ async function scheduleScraperWithRetry() {
   console.log("[Points Tracker] Start scraping on matched URL with config: ", activeConfig);
 
   let attempts = 0;
+  let lastScrapedPoints = null;
   const interval = 1000;
   const maxAttempts = 20;
 
   scrapeAttemptsInterval = setInterval(async () => {
     attempts++;
-    const success = await runScraper(activeConfig);
-
-    if (success || attempts >= maxAttempts) {
-      clearInterval(scrapeAttemptsInterval);
-      scrapeAttemptsInterval = null;
+    const data = await scrapeData(activeConfig);
+    if (data != null) {
+      const isLastAttempt = attempts >= maxAttempts;
+      const hasStabilized = lastScrapedPoints !== null && lastScrapedPoints === data.points;
+      if ((data.points > 0 && hasStabilized) || isLastAttempt) {
+        stopScraperRetry();
+        maybeSendData(data);
+        console.log("[Points Tracker] Scraped rewards data successfully:", data);
+      } else {
+        lastScrapedPoints = data.points;
+        console.log(
+          "[Points Tracker] Scraped rewards points is loading or animating, will retry:",
+          data.points,
+        );
+      }
     }
+
     if (attempts >= maxAttempts) {
+      stopScraperRetry();
       console.error(
         `[Points Tracker] failed to scrape rewards information after ${maxAttempts} attemps.`,
       );
     }
   }, interval);
+}
+
+function stopScraperRetry() {
+  clearInterval(scrapeAttemptsInterval);
+  scrapeAttemptsInterval = null;
 }
 
 // Sync latestBalanceMap in real-time when storage updates from other tabs/devices
