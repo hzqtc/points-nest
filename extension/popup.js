@@ -168,10 +168,17 @@ function createCategoryGroup(cat, items, configs) {
       const elapsedMs = Date.now() - new Date(account.timestamp).getTime();
       if (elapsedMs < 86400000) {
         cardEl.classList.add("highlighted");
+        const ptsChangeEl = clone.querySelector(".pts-change");
         if (account.change > 0) {
           cardEl.classList.add("change-up");
+          if (ptsChangeEl) {
+            ptsChangeEl.textContent = `+${formatNumber(account.change)}`;
+          }
         } else if (account.change < 0) {
           cardEl.classList.add("change-down");
+          if (ptsChangeEl) {
+            ptsChangeEl.textContent = `-${formatNumber(Math.abs(account.change))}`;
+          }
         } else if (account.change === null || account.change === undefined) {
           cardEl.classList.add("change-new");
         }
