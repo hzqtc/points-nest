@@ -158,7 +158,7 @@ function createCategoryGroup(cat, items, configs) {
       title: `${account.provider} — ${account.programName}`,
       account: displayName,
       points: formatNumber(account.points),
-      updated: `Updated ${updatedTime}`,
+      updated: `Changed ${updatedTime}`,
       icon: iconUrl,
     });
 
@@ -177,17 +177,12 @@ function createCategoryGroup(cat, items, configs) {
         }
       }
     }
-    // Configure the refresh button
-    const refreshBtn = clone.querySelector(".refresh-btn");
-    if (refreshBtn) {
-      if (account.scrapedUrl) {
-        refreshBtn.addEventListener("click", (e) => {
-          e.stopPropagation();
-          chrome.tabs.create({ url: account.scrapedUrl });
-        });
-      } else {
-        refreshBtn.style.display = "none";
-      }
+    if (cardEl && account.scrapedUrl) {
+      cardEl.classList.add("clickable");
+      cardEl.setAttribute("title", `Open ${account.accountName} (${account.accountId})`);
+      cardEl.addEventListener("click", () => {
+        chrome.tabs.create({ url: account.scrapedUrl });
+      });
     }
 
     groupDiv.appendChild(clone);

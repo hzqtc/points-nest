@@ -198,24 +198,6 @@ body.two-column {
   padding-bottom: 4px;
 }
 
-/* Highlight/Animation for recently updated cards */
-@keyframes highlight-fade {
-  0% {
-    background-color: rgba(37, 99, 235, 0.15);
-    border-color: var(--accent-color);
-    box-shadow: 0 0 12px rgba(37, 99, 235, 0.3);
-  }
-  100% {
-    background-color: var(--bg-secondary);
-    border-color: var(--border-color);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
-  }
-}
-
-.account-card.highlighted {
-  animation: highlight-fade 4s ease-out forwards;
-}
-
 .account-card.highlighted.change-up .pts-amount::after {
   content: ' ↑';
   color: #10b981;
@@ -242,37 +224,13 @@ body.two-column {
   box-shadow: 0 0 6px #10b981;
 }
 
-.account-right-container {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.refresh-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  border: 1px solid var(--border-color);
-  background: var(--bg-primary);
-  color: var(--text-secondary);
+/* Clickable account card animations and styling */
+.account-card.clickable {
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  padding: 0;
-  outline: none;
-  flex-shrink: 0;
 }
 
-.refresh-btn:hover {
-  color: var(--accent-color);
+.account-card.clickable:hover {
   border-color: var(--accent-color);
-  background: var(--bg-secondary);
-  transform: rotate(45deg);
-}
-
-.refresh-btn:active {
-  transform: scale(0.9) rotate(90deg);
+  background-color: var(--bg-secondary);
 }
 
