@@ -4,6 +4,8 @@
 
 Unlike traditional reward trackers, **Points Nest does not require your credentials, store data on external servers, or use any third-party databases.** It parses point balances directly within your active browser tab when you log into your accounts and stores them completely locally in your browser's encrypted sync storage.
 
+![](https://raw.github.com/hzqtc/points-nest/master/screenshot.png)
+
 ---
 
 ## Features
