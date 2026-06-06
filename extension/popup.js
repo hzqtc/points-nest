@@ -177,6 +177,18 @@ function createCategoryGroup(cat, items, configs) {
         }
       }
     }
+    // Configure the refresh button
+    const refreshBtn = clone.querySelector(".refresh-btn");
+    if (refreshBtn) {
+      if (account.scrapedUrl) {
+        refreshBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          chrome.tabs.create({ url: account.scrapedUrl });
+        });
+      } else {
+        refreshBtn.style.display = "none";
+      }
+    }
 
     groupDiv.appendChild(clone);
   });

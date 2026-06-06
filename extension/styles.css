@@ -241,3 +241,38 @@ body.two-column {
   vertical-align: middle;
   box-shadow: 0 0 6px #10b981;
 }
+
+.account-right-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.refresh-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid var(--border-color);
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 0;
+  outline: none;
+  flex-shrink: 0;
+}
+
+.refresh-btn:hover {
+  color: var(--accent-color);
+  border-color: var(--accent-color);
+  background: var(--bg-secondary);
+  transform: rotate(45deg);
+}
+
+.refresh-btn:active {
+  transform: scale(0.9) rotate(90deg);
+}
+

@@ -188,6 +188,7 @@ async function scrapeData(config) {
     programName: programName,
     points: rewardsPoints,
     timestamp: new Date().toISOString(),
+    scrapedUrl: window.location.href,
   };
 }
 
