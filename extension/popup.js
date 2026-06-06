@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
       },
     });
   } catch (e) {
-    console.warn("[Points Tracker] Failed to reset action icon:", e);
+    console.warn("[Points Nest] Failed to reset action icon:", e);
   }
 
   renderData();
@@ -41,7 +41,7 @@ async function loadConfig() {
     scraperConfigs = await response.json();
     return scraperConfigs;
   } catch (error) {
-    console.error("[Points Tracker] Failed to load site-config.json:", error);
+    console.error("[Points Nest] Failed to load site-config.json:", error);
     return [];
   }
 }

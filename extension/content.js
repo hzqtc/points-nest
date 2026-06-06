@@ -28,17 +28,17 @@ async function initialize() {
     const url = chrome.runtime.getURL("site-config.json");
     const response = await fetch(url);
     scraperConfigs = await response.json();
-    console.log("[Points Tracker] Loaded scraper configuration successfully:", scraperConfigs);
+    console.log("[Points Nest] Loaded scraper configuration successfully:", scraperConfigs);
 
     // Initialize latestBalanceMap from Chrome sync storage
     const result = await chrome.storage.sync.get(["latestBalances"]);
     updateLatestBalanceMap(result.latestBalances);
     console.log(
-      "[Points Tracker] Initialized latestBalanceMap from storage sync:",
+      "[Points Nest] Initialized latestBalanceMap from storage sync:",
       latestBalanceMap,
     );
   } catch (error) {
-    console.error("[Points Tracker] Failed to load site-config.json or storage sync:", error);
+    console.error("[Points Nest] Failed to load site-config.json or storage sync:", error);
   }
 }
 
@@ -56,7 +56,7 @@ function getActiveConfig() {
         return regex.test(currentUrl);
       });
     } catch (e) {
-      console.error(`[Points Tracker] Invalid url regex: ${patterns}`, e);
+      console.error(`[Points Nest] Invalid url regex: ${patterns}`, e);
       return false;
     }
   });
@@ -110,7 +110,7 @@ function extractText(selectorInput) {
   }
 
   console.warn(
-    `[Points Tracker] Selector "${JSON.stringify(selectorInput)}" did not match any element on the page.`,
+    `[Points Nest] Selector "${JSON.stringify(selectorInput)}" did not match any element on the page.`,
   );
   return null;
 }
@@ -143,7 +143,7 @@ function normalizeString(value, rule) {
       }
     }
   } catch (e) {
-    console.warn("[Points Tracker] Normalization rule error:", e);
+    console.warn("[Points Nest] Normalization rule error:", e);
   }
 
   return result;
@@ -174,7 +174,7 @@ async function scrapeData(config) {
   const rewardsValue = rawRewardsText.replace(/,/g, "").trim();
   if (!rewardsValue.match(/^(\d+)$/)) {
     console.error(
-      `[Points Tracker] Rewards value text "${rewardsValue}" was malformatted and did not contain a valid number.`,
+      `[Points Nest] Rewards value text "${rewardsValue}" was malformatted and did not contain a valid number.`,
     );
     return null;
   }
@@ -224,10 +224,10 @@ async function scheduleScraperWithRetry() {
   const activeConfig = getActiveConfig();
   if (!activeConfig) return;
   if (!isValidConfig(activeConfig)) {
-    console.log("[Points Tracker] Invalid config: ", activeConfig);
+    console.log("[Points Nest] Invalid config: ", activeConfig);
     return;
   }
-  console.log("[Points Tracker] Start scraping on matched URL with config: ", activeConfig);
+  console.log("[Points Nest] Start scraping on matched URL with config: ", activeConfig);
 
   let attempts = 0;
   let lastScrapedPoints = null;
@@ -243,11 +243,11 @@ async function scheduleScraperWithRetry() {
       if ((data.points > 0 && hasStabilized) || isLastAttempt) {
         stopScraperRetry();
         maybeSendData(data);
-        console.log("[Points Tracker] Scraped rewards data successfully:", data);
+        console.log("[Points Nest] Scraped rewards data successfully:", data);
       } else {
         lastScrapedPoints = data.points;
         console.log(
-          "[Points Tracker] Scraped rewards points is loading or animating, will retry:",
+          "[Points Nest] Scraped rewards points is loading or animating, will retry:",
           data.points,
         );
       }
@@ -256,7 +256,7 @@ async function scheduleScraperWithRetry() {
     if (attempts >= maxAttempts) {
       stopScraperRetry();
       console.error(
-        `[Points Tracker] failed to scrape rewards information after ${maxAttempts} attemps.`,
+        `[Points Nest] failed to scrape rewards information after ${maxAttempts} attemps.`,
       );
     }
   }, interval);

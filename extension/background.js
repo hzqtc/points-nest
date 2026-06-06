@@ -7,7 +7,7 @@
 chrome.runtime.onMessage.addListener((message) => {
   if (message.type === "POINTS_UPDATED") {
     const pointsData = message.payload;
-    console.log("[Points Tracker] Received points update in background:", pointsData);
+    console.log("[Points Nest] Received points update in background:", pointsData);
     saveToChromeStorage(pointsData);
 
     // Set toolbar icon to the active state (with a red dot)
@@ -45,9 +45,9 @@ function saveToChromeStorage(data) {
     const key = `${data.provider}_${data.accountName}_${data.accountId}`;
     latestBalances[key] = data;
     chrome.storage.sync.set({ latestBalances }, () => {
-      console.log("[Points Tracker] Points synced to Chrome storage across devices.");
+      console.log("[Points Nest] Points synced to Chrome storage across devices.");
     });
   });
 }
 
-console.log("[Points Tracker] Background service worker loaded.");
+console.log("[Points Nest] Background service worker loaded.");
