@@ -5,18 +5,14 @@
 
 document.addEventListener("DOMContentLoaded", () => {
   // Reset toolbar icon to normal state when popup is opened
-  try {
-    chrome.action.setIcon({
-      path: {
-        16: "icon16.png",
-        32: "icon32.png",
-        48: "icon48.png",
-        128: "icon128.png",
-      },
-    });
-  } catch (e) {
-    console.warn("[Points Nest] Failed to reset action icon:", e);
-  }
+  chrome.action.setIcon({
+    path: {
+      16: "icon16.png",
+      32: "icon32.png",
+      48: "icon48.png",
+      128: "icon128.png",
+    },
+  });
 
   renderData();
 
@@ -149,7 +145,7 @@ function createCategoryGroup(cat, items, configs) {
 
   items.forEach((account) => {
     const clone = cardTemplate.content.cloneNode(true);
-    const updatedTime = getRelativeTime(account.timestamp);
+    const updatedTime = getRelativeTime(account.lastUpdated);
     const displayName = `${account.accountName} (${account.accountId})`;
     const siteConfig = configs.find((c) => c.siteName === account.provider);
     const iconUrl = siteConfig ? siteConfig.icon : "";
@@ -158,32 +154,48 @@ function createCategoryGroup(cat, items, configs) {
       title: `${account.provider} — ${account.programName}`,
       account: displayName,
       points: formatNumber(account.points),
-      updated: `Changed ${updatedTime}`,
+      updated: `Updated ${updatedTime}`,
       icon: iconUrl,
     });
 
-    // Highlight the card and add change arrow classes if updated recently (e.g. within last 24 hours)
+    // Add change indicators if changed recently (e.g. within last 24 hours)
     const cardEl = clone.querySelector(".account-card");
-    if (cardEl && account.timestamp) {
-      const elapsedMs = Date.now() - new Date(account.timestamp).getTime();
-      if (elapsedMs < 86400000) {
-        cardEl.classList.add("highlighted");
-        const ptsChangeEl = clone.querySelector(".pts-change");
-        if (account.change > 0) {
-          cardEl.classList.add("change-up");
-          if (ptsChangeEl) {
-            ptsChangeEl.textContent = `+${formatNumber(account.change)}`;
-          }
-        } else if (account.change < 0) {
-          cardEl.classList.add("change-down");
-          if (ptsChangeEl) {
-            ptsChangeEl.textContent = `-${formatNumber(Math.abs(account.change))}`;
-          }
-        } else if (account.change === null || account.change === undefined) {
-          cardEl.classList.add("change-new");
+    const isRecentlyChanged = Date.now() - new Date(account.lastChanged).getTime() < 86400000;
+    if (isRecentlyChanged) {
+      cardEl.classList.add("highlighted");
+      const ptsChangeEl = clone.querySelector(".pts-change");
+      if (account.change > 0) {
+        cardEl.classList.add("change-up");
+        if (ptsChangeEl) {
+          ptsChangeEl.textContent = `+${formatNumber(account.change)}`;
+        }
+      } else if (account.change < 0) {
+        cardEl.classList.add("change-down");
+        if (ptsChangeEl) {
+          ptsChangeEl.textContent = `-${formatNumber(Math.abs(account.change))}`;
+        }
+      } else if (account.change === null || account.change === undefined) {
+        cardEl.classList.add("change-new");
+        if (ptsChangeEl) {
+          ptsChangeEl.textContent = "new";
         }
       }
     }
+
+    // Set the status indicator based on data freshness/age
+    const statusDotEl = clone.querySelector(".status-dot");
+    const elapsedSinceLastUpdate = Date.now() - new Date(account.lastUpdated).getTime();
+    const oneWeek = 7 * 24 * 60 * 60 * 1000;
+    const oneMonth = 30 * 24 * 60 * 60 * 1000;
+    if (elapsedSinceLastUpdate < oneWeek) {
+      statusDotEl.classList.add("status-green");
+    } else if (elapsedSinceLastUpdate < oneMonth) {
+      statusDotEl.classList.add("status-yellow");
+    } else {
+      statusDotEl.classList.add("status-red");
+    }
+
+    // Click on the card opens the scraped url
     if (cardEl && account.scrapedUrl) {
       cardEl.classList.add("clickable");
       cardEl.setAttribute("title", `Open ${account.accountName} (${account.accountId})`);

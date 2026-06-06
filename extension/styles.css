@@ -15,6 +15,7 @@
   --accent-hover: #1d4ed8;
   --color-up: #10b981;
   --color-down: #ef4444;
+  --color-stale: #f59e0b;
 
   /* Typography */
   --font-size-lg: 15px;
@@ -35,6 +36,7 @@
   --min-height: 280px;
   --icon-size: 20px;
   --dot-size: 6px;
+  --pts-min-width: 120px;
 
   /* Radii */
   --radius-sm: 4px;
@@ -162,6 +164,8 @@ body.two-column {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+  min-width: var(--pts-min-width);
+  flex-shrink: 0;
 }
 
 .pts-amount {
@@ -175,6 +179,32 @@ body.two-column {
   font-size: var(--font-size-xs);
   color: var(--text-secondary);
   margin-top: 1px;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.status-dot {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-dot.status-green {
+  background-color: var(--color-up);
+  box-shadow: 0 0 4px var(--color-up);
+}
+
+.status-dot.status-yellow {
+  background-color: var(--color-stale);
+  box-shadow: 0 0 4px var(--color-stale);
+}
+
+.status-dot.status-red {
+  background-color: var(--color-down);
+  box-shadow: 0 0 4px var(--color-down);
 }
 
 .empty-state {
@@ -263,16 +293,11 @@ body.two-column {
   text-shadow: 0 0 6px var(--color-down);
 }
 
-.account-card.highlighted.change-new .pts-amount::after {
-  content: '';
-  display: inline-block;
-  width: var(--dot-size);
-  height: var(--dot-size);
-  background-color: var(--color-up);
-  border-radius: 50%;
-  margin-left: var(--dot-size);
-  vertical-align: middle;
-  box-shadow: 0 0 6px var(--color-up);
+.account-card.highlighted.change-new .pts-change {
+  color: var(--color-up);
+  text-shadow: 0 0 6px var(--color-up);
+  text-transform: uppercase;
+  font-weight: 700;
 }
 
 /* Clickable account card animations and styling */

@@ -74,7 +74,7 @@
     }
   },
   {
-    "siteName": "IHG",
+    "siteName": "IHG One",
     "category": "Hotel",
     "icon": "https://www.ihg.com/favicon.ico",
     "urlRegex": "https://www.ihg.com/rewardsclub/[a-z]+/[a-z]+/account-mgmt/home",

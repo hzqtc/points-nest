@@ -8,20 +8,9 @@
 
 let scraperConfigs = null;
 let isConfigInitialized = false;
-let latestBalanceMap = new Map();
 
 /**
- * Updates the in-memory latestBalanceMap from a plain object of values.
- */
-function updateLatestBalanceMap(latestBalances) {
-  if (!latestBalances) return;
-  for (const [key, value] of Object.entries(latestBalances)) {
-    latestBalanceMap.set(key, value);
-  }
-}
-
-/**
- * Loads the site-config.json file and populates the in-memory latestBalanceMap from sync storage.
+ * Loads the site-config.json file.
  */
 async function initialize() {
   try {
@@ -29,16 +18,8 @@ async function initialize() {
     const response = await fetch(url);
     scraperConfigs = await response.json();
     console.log("[Points Nest] Loaded scraper configuration successfully:", scraperConfigs);
-
-    // Initialize latestBalanceMap from Chrome sync storage
-    const result = await chrome.storage.sync.get(["latestBalances"]);
-    updateLatestBalanceMap(result.latestBalances);
-    console.log(
-      "[Points Nest] Initialized latestBalanceMap from storage sync:",
-      latestBalanceMap,
-    );
   } catch (error) {
-    console.error("[Points Nest] Failed to load site-config.json or storage sync:", error);
+    console.error("[Points Nest] Failed to load site-config.json:", error);
   }
 }
 
@@ -187,23 +168,9 @@ async function scrapeData(config) {
     accountId: accountId,
     programName: programName,
     points: rewardsPoints,
-    timestamp: new Date().toISOString(),
+    lastUpdated: new Date().toISOString(),
     scrapedUrl: window.location.href,
   };
-}
-
-function maybeSendData(data) {
-  const primaryKey = `${data.provider}_${data.accountName}_${data.accountId}`;
-  const lastCaptured = latestBalanceMap.get(primaryKey);
-  // Only send if the balance has changed to prevent infinite loops / spam
-  if (!lastCaptured || lastCaptured.points !== data.points) {
-    data.change = lastCaptured ? data.points - lastCaptured.points : null;
-    latestBalanceMap.set(primaryKey, data);
-    chrome.runtime.sendMessage({
-      type: "POINTS_UPDATED",
-      payload: data,
-    });
-  }
 }
 
 let scrapeAttemptsInterval = null;
@@ -243,7 +210,10 @@ async function scheduleScraperWithRetry() {
       const hasStabilized = lastScrapedPoints !== null && lastScrapedPoints === data.points;
       if ((data.points > 0 && hasStabilized) || isLastAttempt) {
         stopScraperRetry();
-        maybeSendData(data);
+        chrome.runtime.sendMessage({
+          type: "POINTS_SCRAPED",
+          payload: data,
+        });
         console.log("[Points Nest] Scraped rewards data successfully:", data);
       } else {
         lastScrapedPoints = data.points;
@@ -267,13 +237,6 @@ function stopScraperRetry() {
   clearInterval(scrapeAttemptsInterval);
   scrapeAttemptsInterval = null;
 }
-
-// Sync latestBalanceMap in real-time when storage updates from other tabs/devices
-chrome.storage.onChanged.addListener((changes, areaName) => {
-  if (areaName === "sync" && changes.latestBalances) {
-    updateLatestBalanceMap(changes.latestBalances.newValue);
-  }
-});
 
 // Trigger scraper on URL changes
 chrome.runtime.onMessage.addListener((message) => {
