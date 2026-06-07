@@ -97,7 +97,7 @@
   {
     "siteName": "Hilton Honors",
     "category": "Hotel",
-    "icon": "https://www.hilton.com/favicon.ico",
+    "icon": "https://www.hilton.com/dx_guests_app/favicon.ico",
     "urlRegex": "https://www.hilton.com/[a-z]+/hilton-honors/guest/my-account/",
     "selectors": {
       "accountName": "[data-testid=\"firstNameLabel\"]",
