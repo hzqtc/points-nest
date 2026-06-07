@@ -3,6 +3,10 @@
  * Renders points overview.
  */
 
+let currentDisplayMode = "pts";
+let scraperConfigs = null;
+let programValuations = null;
+
 document.addEventListener("DOMContentLoaded", () => {
   // Reset toolbar icon to normal state when popup is opened
   chrome.action.setIcon({
@@ -14,20 +18,49 @@ document.addEventListener("DOMContentLoaded", () => {
     },
   });
 
-  renderData();
+  // Load preferred display mode and bind click listener
+  chrome.storage.sync.get(["displayMode"], (result) => {
+    currentDisplayMode = result.displayMode || "pts";
+    updateToggleUI();
+    renderData();
+  });
+
+  const toggleBtn = document.getElementById("toggle-display");
+  toggleBtn.addEventListener("click", () => {
+    currentDisplayMode = currentDisplayMode === "pts" ? "usd" : "pts";
+    chrome.storage.sync.set({ displayMode: currentDisplayMode }, () => {
+      updateToggleUI();
+      renderData();
+    });
+  });
 
   // Listen for storage changes to refresh UI instantly
   chrome.storage.onChanged.addListener((changes) => {
-    if (changes.latestBalances) {
+    if (changes.displayMode) {
+      currentDisplayMode = changes.displayMode.newValue;
+      updateToggleUI();
+      renderData();
+    } else if (changes.latestBalances) {
       renderData();
     }
   });
 });
 
-/**
- * Renders the points dashboard using saved data in chrome.storage.sync.
- */
-let scraperConfigs = null;
+function updateToggleUI() {
+  const toggleBtn = document.getElementById("toggle-display");
+  const ptsLabel = toggleBtn.querySelector(".points-label");
+  const usdLabel = toggleBtn.querySelector(".usd-label");
+
+  if (currentDisplayMode === "usd") {
+    toggleBtn.classList.add("usd-active");
+    ptsLabel.classList.remove("active");
+    usdLabel.classList.add("active");
+  } else {
+    toggleBtn.classList.remove("usd-active");
+    ptsLabel.classList.add("active");
+    usdLabel.classList.remove("active");
+  }
+}
 
 async function loadConfig() {
   if (scraperConfigs) return scraperConfigs;
@@ -42,16 +75,70 @@ async function loadConfig() {
   }
 }
 
+async function loadValuations() {
+  if (programValuations) return programValuations;
+  try {
+    const url = chrome.runtime.getURL("constants.json");
+    const response = await fetch(url);
+    programValuations = await response.json();
+    return programValuations;
+  } catch (error) {
+    console.error("[Points Nest] Failed to load constants.json:", error);
+    return {};
+  }
+}
+
+function getValuationCpp(account, valuations) {
+  // 1. Try exact match on programName
+  if (account.programName && valuations[account.programName] !== undefined) {
+    return valuations[account.programName];
+  }
+
+  // 2. Try substring match on programName keys
+  if (account.programName) {
+    for (const [key, cpp] of Object.entries(valuations)) {
+      if (account.programName.toLowerCase().includes(key.toLowerCase())) {
+        return cpp;
+      }
+    }
+  }
+
+  // 3. Try match/substring match on provider/siteName
+  if (account.provider && valuations[account.provider] !== undefined) {
+    return valuations[account.provider];
+  }
+  if (account.provider) {
+    for (const [key, cpp] of Object.entries(valuations)) {
+      if (account.provider.toLowerCase().includes(key.toLowerCase())) {
+        return cpp;
+      }
+    }
+  }
+
+  // Default fallback (1.0 cent per point)
+  return 1.0;
+}
+
 async function renderData() {
   const configs = await loadConfig();
+  const valuations = await loadValuations();
+
   chrome.storage.sync.get(["latestBalances"], (result) => {
     const latestBalances = result.latestBalances || {};
     const accounts = Object.values(latestBalances);
-
-    // Calculate and display overall points total next to the app title
     const overallTotal = accounts.reduce((sum, account) => sum + account.points, 0);
+
     const titleTotalEl = document.getElementById("title-total");
-    titleTotalEl.textContent = `(${formatNumber(overallTotal)} pts)`;
+    if (currentDisplayMode === "usd") {
+      const overallUsdTotal = accounts.reduce((sum, account) => {
+        const cpp = getValuationCpp(account, valuations);
+        return sum + account.points * (cpp / 100);
+      }, 0);
+      titleTotalEl.textContent = `($${formatCurrency(overallUsdTotal)})`;
+    } else {
+      titleTotalEl.textContent = `(${formatNumber(overallTotal)} pts)`;
+    }
+
     const accountsListContainer = document.getElementById("accounts-list");
 
     if (accounts.length === 0) {
@@ -81,8 +168,8 @@ async function renderData() {
     });
     // Sort categories by number of accounts
     const sortedCategories = Object.entries(groupSize)
-      .sort((a, b) => b[1] - a[1]) // Reverse sort by value (index 1)
-      .map((entry) => entry[0]); // Get key (category)
+      .sort((a, b) => b[1] - a[1])
+      .map((entry) => entry[0]);
 
     accountsListContainer.replaceChildren();
 
@@ -92,7 +179,7 @@ async function renderData() {
       const colDiv = document.createElement("div");
       colDiv.className = "accounts-column";
       colDiv.appendChild(
-        createCategoryGroup(sortedCategories[0], grouped[sortedCategories[0]], configs),
+        createCategoryGroup(sortedCategories[0], grouped[sortedCategories[0]], configs, valuations),
       );
       accountsListContainer.appendChild(colDiv);
     } else {
@@ -115,12 +202,12 @@ async function renderData() {
       const colADiv = document.createElement("div");
       colADiv.className = "accounts-column";
       colA.forEach((cat) => {
-        colADiv.appendChild(createCategoryGroup(cat, grouped[cat], configs));
+        colADiv.appendChild(createCategoryGroup(cat, grouped[cat], configs, valuations));
       });
       const colBDiv = document.createElement("div");
       colBDiv.className = "accounts-column";
       colB.forEach((cat) => {
-        colBDiv.appendChild(createCategoryGroup(cat, grouped[cat], configs));
+        colBDiv.appendChild(createCategoryGroup(cat, grouped[cat], configs, valuations));
       });
       accountsListContainer.appendChild(colADiv);
       accountsListContainer.appendChild(colBDiv);
@@ -131,14 +218,24 @@ async function renderData() {
 /**
  * Creates and returns a styled category group element.
  */
-function createCategoryGroup(cat, items, configs) {
+function createCategoryGroup(cat, items, configs, valuations) {
   const groupDiv = document.createElement("div");
   groupDiv.className = "category-group";
 
   const titleDiv = document.createElement("div");
   titleDiv.className = "category-title";
+
   const totalPoints = items.reduce((sum, item) => sum + item.points, 0);
-  titleDiv.textContent = `${cat} (${formatNumber(totalPoints)} pts)`;
+
+  if (currentDisplayMode === "usd") {
+    const totalUsd = items.reduce((sum, item) => {
+      const cpp = getValuationCpp(item, valuations);
+      return sum + item.points * (cpp / 100);
+    }, 0);
+    titleDiv.textContent = `${cat} ($${formatCurrency(totalUsd)})`;
+  } else {
+    titleDiv.textContent = `${cat} (${formatNumber(totalPoints)} pts)`;
+  }
   groupDiv.appendChild(titleDiv);
 
   const cardTemplate = document.getElementById("account-card-template");
@@ -150,10 +247,16 @@ function createCategoryGroup(cat, items, configs) {
     const siteConfig = configs.find((c) => c.siteName === account.provider);
     const iconUrl = siteConfig ? siteConfig.icon : "";
 
+    const cpp = getValuationCpp(account, valuations);
+    const pointsDisplay =
+      currentDisplayMode === "usd"
+        ? `$${formatCurrency(account.points * (cpp / 100))}`
+        : formatNumber(account.points);
+
     bindData(clone, {
       title: `${account.provider} — ${account.programName}`,
       account: displayName,
-      points: formatNumber(account.points),
+      points: pointsDisplay,
       updated: `Updated ${updatedTime}`,
       icon: iconUrl,
     });
@@ -167,12 +270,20 @@ function createCategoryGroup(cat, items, configs) {
       if (account.change > 0) {
         cardEl.classList.add("change-up");
         if (ptsChangeEl) {
-          ptsChangeEl.textContent = `+${formatNumber(account.change)}`;
+          if (currentDisplayMode === "usd") {
+            ptsChangeEl.textContent = `+$${formatCurrency(account.change * (cpp / 100))}`;
+          } else {
+            ptsChangeEl.textContent = `+${formatNumber(account.change)}`;
+          }
         }
       } else if (account.change < 0) {
         cardEl.classList.add("change-down");
         if (ptsChangeEl) {
-          ptsChangeEl.textContent = `-${formatNumber(Math.abs(account.change))}`;
+          if (currentDisplayMode === "usd") {
+            ptsChangeEl.textContent = `-$${formatCurrency(Math.abs(account.change) * (cpp / 100))}`;
+          } else {
+            ptsChangeEl.textContent = `-$${formatNumber(Math.abs(account.change))}`;
+          }
         }
       } else if (account.change === null || account.change === undefined) {
         cardEl.classList.add("change-new");
@@ -233,6 +344,16 @@ function bindData(element, data) {
  */
 function formatNumber(num) {
   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+/**
+ * Helper to display currency cleanly (e.g. 1234.56 -> "1,234.56")
+ */
+function formatCurrency(val) {
+  return val.toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
 }
 
 /**

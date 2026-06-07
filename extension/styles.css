@@ -309,3 +309,60 @@ body.two-column {
   border-color: var(--accent-color);
   background-color: var(--bg-secondary);
 }
+
+/* Display Toggle Switch Styles */
+.toggle-container {
+  display: flex;
+  align-items: center;
+}
+
+.display-toggle-btn {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+  width: 78px;
+  height: 24px;
+  outline: none;
+  transition: all 0.2s ease;
+  overflow: hidden;
+}
+
+.display-toggle-btn:hover {
+  border-color: var(--border-hover);
+}
+
+.toggle-label {
+  flex: 1;
+  font-size: 9px;
+  font-weight: 700;
+  text-align: center;
+  z-index: 2;
+  color: var(--text-secondary);
+  transition: color 0.2s ease;
+  user-select: none;
+}
+
+.toggle-label.active {
+  color: var(--bg-secondary);
+}
+
+.toggle-slider {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 35px;
+  height: 18px;
+  background: var(--accent-color);
+  border-radius: 18px;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1;
+}
+
+.display-toggle-btn.usd-active .toggle-slider {
+  transform: translateX(37px);
+}
