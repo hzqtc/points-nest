@@ -8,15 +8,7 @@ let scraperConfigs = null;
 let programValuations = null;
 
 document.addEventListener("DOMContentLoaded", () => {
-  // Reset toolbar icon to normal state when popup is opened
-  chrome.action.setIcon({
-    path: {
-      16: "icon16.png",
-      32: "icon32.png",
-      48: "icon48.png",
-      128: "icon128.png",
-    },
-  });
+  chrome.runtime.sendMessage({ type: "POPUP_OPENED" }).catch(() => {});
 
   // Load preferred display mode and bind click listener
   chrome.storage.sync.get(["displayMode"], (result) => {
