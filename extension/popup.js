@@ -274,7 +274,7 @@ function createCategoryGroup(cat, items, configs, valuations) {
           if (currentDisplayMode === "usd") {
             ptsChangeEl.textContent = `-$${formatCurrency(Math.abs(account.change) * (cpp / 100))}`;
           } else {
-            ptsChangeEl.textContent = `-$${formatNumber(Math.abs(account.change))}`;
+            ptsChangeEl.textContent = `-${formatNumber(Math.abs(account.change))}`;
           }
         }
       } else if (account.change === null || account.change === undefined) {
