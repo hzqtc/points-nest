@@ -6,9 +6,12 @@
 let currentDisplayMode = "pts";
 let scraperConfigs = null;
 let programValuations = null;
+let activeModalAccount = null;
 
 document.addEventListener("DOMContentLoaded", () => {
   chrome.runtime.sendMessage({ type: "POPUP_OPENED" }).catch(() => {});
+
+  setupModalListeners();
 
   // Load preferred display mode and bind click listener
   chrome.storage.sync.get(["displayMode"], (result) => {
@@ -23,6 +26,9 @@ document.addEventListener("DOMContentLoaded", () => {
     chrome.storage.sync.set({ displayMode: currentDisplayMode }, () => {
       updateToggleUI();
       renderData();
+      if (activeModalAccount) {
+        openHistoryModal(activeModalAccount, programValuations, scraperConfigs);
+      }
     });
   });
 
@@ -32,8 +38,19 @@ document.addEventListener("DOMContentLoaded", () => {
       currentDisplayMode = changes.displayMode.newValue;
       updateToggleUI();
       renderData();
+      if (activeModalAccount) {
+        openHistoryModal(activeModalAccount, programValuations, scraperConfigs);
+      }
     } else if (changes.latestBalances) {
       renderData();
+      if (activeModalAccount) {
+        const updatedBalances = changes.latestBalances.newValue || {};
+        const key = getAccountKey(activeModalAccount);
+        if (updatedBalances[key]) {
+          activeModalAccount = updatedBalances[key];
+          openHistoryModal(activeModalAccount, programValuations, scraperConfigs);
+        }
+      }
     }
   });
 });
@@ -298,12 +315,23 @@ function createCategoryGroup(cat, items, configs, valuations) {
       statusDotEl.classList.add("status-red");
     }
 
-    // Click on the card opens the scraped url
-    if (cardEl && account.scrapedUrl) {
-      cardEl.classList.add("clickable");
-      cardEl.setAttribute("title", `Open ${account.accountName} (${account.accountId})`);
-      cardEl.addEventListener("click", () => {
+    // Click on the logo opens the scraped portal URL
+    const iconEl = clone.querySelector(".account-icon");
+    if (iconEl && account.scrapedUrl) {
+      iconEl.classList.add("clickable-icon");
+      iconEl.setAttribute("title", `Open ${account.provider} portal`);
+      iconEl.addEventListener("click", (e) => {
+        e.stopPropagation();
         chrome.tabs.create({ url: account.scrapedUrl });
+      });
+    }
+
+    // Click on the card opens the balance history line chart modal
+    if (cardEl) {
+      cardEl.classList.add("clickable");
+      cardEl.setAttribute("title", `View balance history for ${displayName}`);
+      cardEl.addEventListener("click", () => {
+        openHistoryModal(account, valuations, configs);
       });
     }
 
@@ -394,3 +422,122 @@ function getRelativeTime(timestamp) {
     return `${yearText} ago`;
   }
 }
+
+let isEscapeHandled = false;
+
+/**
+ * Sets up global click and keyboard listeners for the balance history modal.
+ */
+function setupModalListeners() {
+  const backdrop = document.getElementById("history-modal-backdrop");
+  const closeBtn = document.getElementById("modal-close-btn");
+
+  if (closeBtn) {
+    closeBtn.addEventListener("click", closeHistoryModal);
+  }
+
+  if (backdrop) {
+    backdrop.addEventListener("click", (e) => {
+      if (e.target === backdrop) {
+        closeHistoryModal();
+      }
+    });
+  }
+
+  // Intercept Escape key during the capture phase to close the modal
+  // without allowing the browser to dismiss the whole extension popup.
+  window.addEventListener(
+    "keydown",
+    (e) => {
+      if (e.key === "Escape" && activeModalAccount) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        isEscapeHandled = true;
+        closeHistoryModal();
+      }
+    },
+    true,
+  );
+
+  window.addEventListener(
+    "keyup",
+    (e) => {
+      if (e.key === "Escape" && isEscapeHandled) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        isEscapeHandled = false;
+      }
+    },
+    true,
+  );
+}
+
+/**
+ * Closes the balance history modal.
+ */
+function closeHistoryModal() {
+  activeModalAccount = null;
+  const backdrop = document.getElementById("history-modal-backdrop");
+  if (backdrop) {
+    backdrop.classList.add("hidden");
+    backdrop.setAttribute("aria-hidden", "true");
+  }
+}
+
+/**
+ * Opens the balance history modal for the specified account and fetches history.
+ */
+function openHistoryModal(account, valuations, configs) {
+  activeModalAccount = account;
+
+  const backdrop = document.getElementById("history-modal-backdrop");
+  if (!backdrop) return;
+
+  const iconEl = document.getElementById("modal-account-icon");
+  const providerEl = document.getElementById("modal-account-provider");
+  const nameEl = document.getElementById("modal-account-name");
+  const portalBtn = document.getElementById("modal-portal-btn");
+  const portalWrapper = portalBtn ? portalBtn.closest(".modal-portal-wrapper") : null;
+
+  // Header info
+  if (providerEl) {
+    providerEl.textContent = `${account.provider} — ${account.programName}`;
+  }
+  if (nameEl) {
+    nameEl.textContent = `${account.accountName} (${account.accountId})`;
+  }
+  if (iconEl) {
+    const siteConfig = configs ? configs.find((c) => c.siteName === account.provider) : null;
+    iconEl.src = siteConfig ? siteConfig.icon : "";
+  }
+
+  // Portal button
+  if (portalWrapper && portalBtn) {
+    if (account.scrapedUrl) {
+      portalWrapper.classList.remove("hidden");
+      portalBtn.onclick = () => {
+        chrome.tabs.create({ url: account.scrapedUrl });
+      };
+    } else {
+      portalWrapper.classList.add("hidden");
+    }
+  }
+
+  // Reveal modal
+  backdrop.classList.remove("hidden");
+  backdrop.setAttribute("aria-hidden", "false");
+
+  // Focus close button for keyboard accessibility and reliable escape capture
+  const closeBtn = document.getElementById("modal-close-btn");
+  if (closeBtn && typeof closeBtn.focus === "function") {
+    closeBtn.focus();
+  }
+
+  // Fetch points history using storage.js and render using chart.js
+  getAccountHistory(account, (historyPoints) => {
+    renderHistoryChart(historyPoints, account, valuations, currentDisplayMode);
+  });
+}
+

@@ -3,6 +3,8 @@
  * Chrome Extension background service worker.
  */
 
+importScripts("storage.js");
+
 let cachedBalances = null;
 let isCacheLoaded = false;
 const pendingQueue = [];
@@ -149,47 +151,6 @@ function updateLatestBalances(balances) {
   chrome.storage.sync.set({ latestBalances: balances }, () => {
     console.log("[Points Nest] Points updated and synced to Chrome storage.");
   });
-}
-
-function updatePointsHistory(data) {
-  const key = getAccountKey(data);
-
-  chrome.storage.sync.get([key], (result) => {
-    const history = result[key] || [];
-
-    // Check if the latest entry in history is already the same points to avoid duplicates
-    if (history.length > 0) {
-      const lastEntry = history[history.length - 1];
-      const lastPoints = parseInt(lastEntry.p, 36);
-      if (lastPoints === data.points) {
-        // Points didn't actually change compared to the last recorded entry, no need to add duplicate
-        return;
-      }
-    }
-
-    // Convert current state to Base-36 compressed entry
-    const epochSec = Math.floor(new Date(data.lastUpdated).getTime() / 1000);
-    const newEntry = {
-      t: epochSec.toString(36),
-      p: data.points.toString(36),
-    };
-    history.push(newEntry);
-
-    // Cap at 100 entries
-    if (history.length > 100) {
-      history.shift(); // Remove oldest entry
-    }
-
-    chrome.storage.sync.set({ [key]: history }, () => {
-      console.log(`[Points Nest] History updated for key ${key}. Length: ${history.length}`);
-    });
-  });
-}
-
-function getAccountKey(accountData) {
-  return `${accountData.provider}_${accountData.programName}_${accountData.accountId}`
-    .toLowerCase()
-    .replace(/[^a-z0-9]/g, "_");
 }
 
 console.log("[Points Nest] Background service worker loaded.");

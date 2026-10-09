@@ -303,11 +303,24 @@ body.two-column {
 /* Clickable account card animations and styling */
 .account-card.clickable {
   cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
 }
 
 .account-card.clickable:hover {
   border-color: var(--accent-color);
-  background-color: var(--bg-secondary);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08);
+  transform: translateY(-1px);
+}
+
+.account-icon.clickable-icon {
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.account-icon.clickable-icon:hover {
+  transform: scale(1.15);
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.25);
 }
 
 /* Display Toggle Switch Styles */
@@ -365,4 +378,321 @@ body.two-column {
 
 .display-toggle-btn.usd-active .toggle-slider {
   transform: translateX(37px);
+}
+
+/* ==========================================================================
+   Balance History Modal & Chart Styles
+   ========================================================================== */
+
+/* Modal Backdrop & Animation */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-md);
+  z-index: 1000;
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+.modal-backdrop.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* Modal Card */
+.modal-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  width: 100%;
+  max-width: 480px;
+  max-height: calc(100vh - 24px);
+  overflow-y: auto;
+  padding: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  transform: translateY(0) scale(1);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal-backdrop.hidden .modal-card {
+  transform: translateY(8px) scale(0.97);
+}
+
+/* Modal Header */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.modal-header-left {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.modal-account-icon {
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radius-sm);
+  object-fit: contain;
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  padding: 2px;
+  flex-shrink: 0;
+}
+
+.modal-account-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.modal-account-provider {
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--accent-color);
+}
+
+.modal-account-name {
+  font-size: var(--font-size-md);
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.modal-close-btn {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  line-height: 1;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: var(--radius-sm);
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.modal-close-btn:hover {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+/* Modal Balance Summary */
+.modal-balance-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.modal-balance-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.modal-balance-label {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
+}
+
+.modal-balance-row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--spacing-sm);
+}
+
+.modal-pts-amount {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.3px;
+}
+
+.modal-pts-change {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+}
+
+.modal-pts-change.change-up {
+  color: var(--color-up);
+}
+
+.modal-pts-change.change-down {
+  color: var(--color-down);
+}
+
+.modal-portal-wrapper.hidden {
+  display: none !important;
+}
+
+.modal-portal-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 10px;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--accent-color);
+  background: rgba(37, 99, 235, 0.08);
+  border: 1px solid rgba(37, 99, 235, 0.2);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s, transform 0.15s;
+}
+
+.modal-portal-btn:hover {
+  background-color: rgba(37, 99, 235, 0.14);
+  border-color: var(--accent-color);
+  transform: translateY(-1px);
+}
+
+.portal-external-icon {
+  flex-shrink: 0;
+}
+
+/* Modal Chart Section */
+.modal-chart-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+}
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 20px;
+}
+
+.chart-header-title {
+  display: flex;
+  align-items: center;
+}
+
+.chart-title {
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--text-secondary);
+}
+
+.chart-hover-readout {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: var(--font-size-xs);
+}
+
+.chart-hover-readout.hidden {
+  display: none !important;
+}
+
+.hover-date {
+  color: var(--text-secondary);
+  font-size: 10px;
+}
+
+.hover-value {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.hover-change {
+  font-weight: 600;
+  font-size: 10px;
+}
+
+.hover-change.change-up {
+  color: var(--color-up);
+}
+
+.hover-change.change-down {
+  color: var(--color-down);
+}
+
+.chart-container {
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.chart-container svg,
+.chart-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.chart-single-point-message {
+  text-align: center;
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  padding: var(--spacing-xs) 0;
+  line-height: 1.4;
+}
+
+/* Modal Stats Grid */
+.modal-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-sm);
+}
+
+.stat-card {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 6px var(--spacing-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.stat-label {
+  font-size: 10px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.stat-value {
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stat-value.change-up {
+  color: var(--color-up);
+}
+
+.stat-value.change-down {
+  color: var(--color-down);
 }

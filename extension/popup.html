@@ -63,6 +63,77 @@
     </div>
   </template>
 
+  <!-- Balance History Line Chart Modal -->
+  <div id="history-modal-backdrop" class="modal-backdrop hidden" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modal-account-name">
+      <div class="modal-header">
+        <div class="modal-header-left">
+          <img id="modal-account-icon" class="modal-account-icon" alt="" />
+          <div class="modal-account-info">
+            <span id="modal-account-provider" class="modal-account-provider"></span>
+            <h2 id="modal-account-name" class="modal-account-name"></h2>
+          </div>
+        </div>
+        <button id="modal-close-btn" class="modal-close-btn" aria-label="Close dialog" title="Close">&times;</button>
+      </div>
+
+      <div class="modal-balance-summary">
+        <div class="modal-balance-main">
+          <span class="modal-balance-label">Current Balance</span>
+          <div class="modal-balance-row">
+            <span id="modal-current-points" class="modal-pts-amount"></span>
+            <span id="modal-pts-change" class="modal-pts-change"></span>
+          </div>
+        </div>
+        <div class="modal-portal-wrapper">
+          <button id="modal-portal-btn" class="modal-portal-btn" title="Open portal website">
+            <span>Portal</span>
+            <svg class="portal-external-icon" viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 9v4H3V4h4M9 2h5v5M6.5 9.5 14 2"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Chart Section -->
+      <div class="modal-chart-section">
+        <div class="chart-header">
+          <div class="chart-header-title">
+            <span class="chart-title">Balance History</span>
+          </div>
+          <!-- Interactive hover readout -->
+          <div id="chart-hover-readout" class="chart-hover-readout hidden">
+            <span id="hover-date" class="hover-date"></span>
+            <span id="hover-value" class="hover-value"></span>
+            <span id="hover-change" class="hover-change"></span>
+          </div>
+        </div>
+
+        <div id="chart-container" class="chart-container">
+          <!-- SVG chart will be injected here -->
+        </div>
+      </div>
+
+      <!-- Stats Grid -->
+      <div class="modal-stats-grid">
+        <div class="stat-card">
+          <span class="stat-label">Net Change</span>
+          <span id="stat-net-change" class="stat-value">--</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Highest</span>
+          <span id="stat-highest" class="stat-value">--</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Lowest</span>
+          <span id="stat-lowest" class="stat-value">--</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="storage.js"></script>
+  <script src="chart.js"></script>
   <script src="popup.js"></script>
 </body>
 </html>
