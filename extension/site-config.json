@@ -62,7 +62,7 @@
     "selectors": {
       "accountName": "[data-locator=\"name\"]",
       "accountId": "[data-locator=\"member-number\"]",
-      "programName": "[class^=\"MemberCard_tierLabel\"]",
+      "programName": "[data-locator=\"type\"]",
       "rewardsValue": "[data-locator=\"points-balance\"]"
     },
     "normalizations": {
