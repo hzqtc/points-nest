@@ -204,5 +204,81 @@
         "replace": ""
       }
     }
+  },
+  {
+    "siteName": "American AAdvantage",
+    "category": "Airline",
+    "icon": "https://www.aa.com/favicon.ico",
+    "urlRegex": "https://www\\.aa\\.com/aadvantage-program/profile/account-summary",
+    "selectors": {
+      "accountName": "[data-testid=\"member-details-section\"] [class*=\"_member-name_\"]",
+      "accountId": "[data-testid=\"member-details-section\"] [class*=\"_aadvantage-number_\"]",
+      "programName": "[data-testid=\"member-details-section\"] [class*=\"_aadvantage-member_\"]",
+      "rewardsValue": "[data-testid=\"award-miles-balance-text\"] [class*=\"_miles-number_\"]"
+    },
+    "normalizations": {
+      "accountName": {
+        "pattern": "^([^\\s]+).*",
+        "replace": "$1",
+        "transform": "titlecase"
+      },
+      "accountId": {
+        "pattern": "^#",
+        "replace": ""
+      },
+      "programName": {
+        "pattern": "^AAdvantage®?\\s*(.*?)®?$",
+        "replace": "$1",
+        "transform": "titlecase"
+      },
+      "rewardsValue": {
+        "pattern": "^\\s*([\\d,]+)[\\s\\S]*$",
+        "replace": "$1"
+      }
+    }
+  },
+  {
+    "siteName": "Citi",
+    "category": "Bank",
+    "icon": "https://www.citi.com/favicon.ico",
+    "urlRegex": "https://online\\.citi\\.com/US/ag/dashboard/credit-card",
+    "selectors": {
+      "accountName": "#cardsBalanceTile .card-title",
+      "accountId": "#cardsBalanceTile .card-title",
+      "programName": ".reward-container .reward-heading",
+      "rewardsValue": ".reward-container .reward-amount"
+    },
+    "normalizations": {
+      "accountName": {
+        "pattern": "^Citi\\s+(.*?)®?\\s+Card\\s+-\\s+\\d+$",
+        "replace": "$1"
+      },
+      "accountId": {
+        "pattern": ".*-\\s*(\\d+)$",
+        "replace": "$1"
+      },
+      "programName": {
+        "pattern": "^Total\\s+(.*?)®?\\s+Points$",
+        "replace": "$1"
+      }
+    }
+  },
+  {
+    "siteName": "Capital One",
+    "category": "Bank",
+    "icon": "https://www.capitalone.com/favicon.ico",
+    "urlRegex": "https://myaccounts\\.capitalone\\.com/accountSummary",
+    "selectors": {
+      "accountName": "c1-ease-account-tile .primary-detail__identity__img::attr(alt)",
+      "accountId": "c1-ease-account-tile .primary-detail__identity__account-number",
+      "programName": "c1-ease-account-tile .secondary-content__label",
+      "rewardsValue": "c1-ease-account-tile .secondary-content__amount"
+    },
+    "normalizations": {
+      "accountId": {
+        "pattern": "^\\.+",
+        "replace": ""
+      }
+    }
   }
 ]

@@ -19,7 +19,10 @@
     "https://www.marriott.com/*",
     "https://www.alaskaair.com/*",
     "https://www.delta.com/*",
-    "https://www.united.com/*"
+    "https://www.united.com/*",
+    "https://www.aa.com/*",
+    "https://online.citi.com/*",
+    "https://myaccounts.capitalone.com/*"
   ],
   "action": {
     "default_popup": "popup.html",
@@ -45,7 +48,10 @@
         "https://www.marriott.com/*",
         "https://www.alaskaair.com/*",
         "https://www.delta.com/*",
-        "https://www.united.com/*"
+        "https://www.united.com/*",
+        "https://www.aa.com/*",
+        "https://online.citi.com/*",
+        "https://myaccounts.capitalone.com/*"
       ],
       "js": ["content.js"],
       "run_at": "document_end"
@@ -63,7 +69,10 @@
         "https://www.marriott.com/*",
         "https://www.alaskaair.com/*",
         "https://www.delta.com/*",
-        "https://www.united.com/*"
+        "https://www.united.com/*",
+        "https://www.aa.com/*",
+        "https://online.citi.com/*",
+        "https://myaccounts.capitalone.com/*"
       ]
     }
   ]

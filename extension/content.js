@@ -152,7 +152,10 @@ async function scrapeData(config) {
   if (!rawRewardsText) {
     return null;
   }
-  const rewardsValue = rawRewardsText.replace(/,/g, "").trim();
+  // Optional cleanup for balances that share an element with label text
+  const rewardsValue = normalizeString(rawRewardsText, config.normalizations?.rewardsValue)
+    .replace(/,/g, "")
+    .trim();
   if (!rewardsValue.match(/^(\d+)$/)) {
     console.error(
       `[Points Nest] Rewards value text "${rewardsValue}" was malformatted and did not contain a valid number.`,
