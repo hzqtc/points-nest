@@ -41,7 +41,7 @@
     },
     "normalizations": {
       "accountName": {
-        "pattern": "Amex (.*)® Card••••(\\d+)",
+        "pattern": "^(?:Amex )?(.*?)(?: Card)?®?(?: Card)?••••\\d+$",
         "replace": "$1"
       },
       "accountId": {
@@ -67,7 +67,7 @@
     },
     "normalizations": {
       "accountName": {
-        "pattern": "^(?:Mr|Mrs|Ms|Miss|Dr|Prof)\\.?\\s+([^\\s]+).*",
+        "pattern": "^(?:(?:Mr|Mrs|Ms|Miss|Dr|Prof)\\.?\\s+)?([^\\s]+).*",
         "replace": "$1",
         "transform": "titlecase"
       }
@@ -87,7 +87,8 @@
     "normalizations": {
       "accountName": {
         "pattern": "Hello (.+),",
-        "replace": "$1"
+        "replace": "$1",
+        "transform": "titlecase"
       },
       "programName": {
         "transform": "titlecase"
